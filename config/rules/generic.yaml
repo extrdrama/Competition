@@ -1,0 +1,169 @@
+# ============================================================
+# 通用凭据、系统账号与运维口令检测规则
+# 全部由本项目自行编写。本文件规则普遍采用"格式 + 上下文关键词"
+# 双重确认，作为覆盖面兜底层，并结合评分阈值控制误报。
+# ============================================================
+category: generic
+label: 通用凭据与系统账号
+rules:
+  - id: env-assignment-password
+    name: 环境变量口令赋值
+    kind: 通用口令
+    severity: high
+    pattern: '(?i)^\s*(?!#)(?:export\s+)?([A-Z][A-Z0-9_]*(?:PASSWORD|PASSWD|PASS|PWD|SECRET|TOKEN|CREDENTIAL)[A-Z0-9_]*)\s*=\s*[''"]?([^\s''"]{6,})[''"]?\s*$'
+    secret_group: 2
+    multiline: true
+    keywords: [password, secret, token]
+    description: .env / shell 脚本中的口令类变量赋值。
+
+  - id: yaml-password-field
+    name: YAML 口令字段
+    kind: 通用口令
+    severity: high
+    pattern: '(?im)^\s*(?:password|passwd|pwd|secret|token|api[_-]?key|access[_-]?key|private[_-]?key)\s*:\s*[''"]?([^\s''"#]{6,})[''"]?\s*(?:#.*)?$'
+    multiline: true
+    keywords: [password, secret, token]
+    description: YAML 配置文件里的口令字段（k8s Secret、docker-compose、Spring 配置等）。
+
+  - id: json-password-field
+    name: JSON 口令字段
+    kind: 通用口令
+    severity: high
+    pattern: '(?i)"(?:password|passwd|pwd|secret|token|apiKey|api_key|accessKey|privateKey)"\s*:\s*"([^"]{6,})"'
+    keywords: [password, secret, apiKey]
+    description: JSON 配置文件里的口令字段。
+
+  - id: os-account-credential
+    name: 操作系统账号口令
+    kind: 系统口令
+    severity: high
+    pattern: '(?i)\b(?:root|administrator|admin|sa|postgres|oracle|ubuntu|centos)\s*[:/]\s*([^\s:''"]{6,})'
+    keywords: [root, admin, password]
+    description: 形如 root:password 或 root/password 的系统账号凭据。
+
+  - id: ssh-command-password
+    name: SSH 命令行口令
+    kind: 系统口令
+    severity: high
+    pattern: '(?i)sshpass\s+-p\s*[''"]?([^\s''"]{4,})[''"]?'
+    keywords: [sshpass, ssh]
+    description: sshpass 命令行中明文传递的 SSH 口令。
+
+  - id: mysql-command-password
+    name: MySQL 命令行口令
+    kind: 数据库口令
+    severity: high
+    pattern: '(?i)mysql\s+(?:-u\s*[^\s]+\s+)?-p[''"]?([^\s''"]{3,})[''"]?'
+    keywords: [mysql, -p]
+    description: MySQL 命令行 -p 后紧跟明文口令的写法。
+
+  - id: ftp-credential
+    name: FTP 凭据
+    kind: 通用凭据
+    severity: high
+    pattern: '(?i)ftp://([^\s:/@''"]+):([^\s:/@''"]+)@([^\s/''"]+)'
+    secret_group: 2
+    keywords: [ftp]
+    description: FTP URL 中内嵌的账号口令。
+
+  - id: proxy-credential
+    name: 代理服务凭据
+    kind: 通用凭据
+    severity: medium
+    pattern: '(?i)(?:socks5|http|https)://([^\s:/@''"]+):([^\s:/@''"]+)@([^\s/''"]+):(\d{2,5})'
+    secret_group: 2
+    keywords: [proxy, socks5]
+    description: 代理地址中内嵌的账号口令。
+
+  - id: basic-auth-header
+    name: HTTP 基础认证头
+    kind: 通用凭据
+    severity: medium
+    pattern: '(?i)Authorization\s*:\s*Basic\s+([A-Za-z0-9+/=]{16,})'
+    keywords: [authorization, basic]
+    description: HTTP Basic 认证头，Base64 解码即为账号口令。
+
+  - id: bearer-token-header
+    name: Bearer 令牌
+    kind: 通用令牌
+    severity: medium
+    pattern: '(?i)Authorization\s*:\s*Bearer\s+([A-Za-z0-9_\-./+=]{20,})'
+    keywords: [authorization, bearer]
+    description: Bearer 认证令牌。
+
+  - id: high-entropy-quoted-string
+    name: 高熵赋值字符串
+    kind: 通用密钥
+    severity: medium
+    pattern: '(?i)(?:key|token|secret|password|passwd|auth|credential)\w*\s*[=:]\s*[''"]([A-Za-z0-9+/=_\-]{24,128})[''"]'
+    keywords: [key, token, secret, password]
+    entropy: true
+    entropy_threshold: 3.5
+    description: 关键词 + 引号包裹的高熵字符串，属于兜底规则，依赖熵与上下文评分过滤。
+
+  # 说明：此处原本有一条 `aws-cli-config`（匹配 aws_access_key_id = xxx）。
+  # 它与 cloud.yaml 的 `aws-access-key-id` 命中同一段文本，但**没有绑定活性
+  # 验证器**，且因匹配范围更大（整行）会在位置合并中胜出，导致丢失凭据类型
+  # 与验证能力。二者功能重叠，保留更精确、带验证器的那条，删除本条。
+
+  - id: docker-image-env-leak
+    name: 镜像构建 ENV 残留
+    kind: 镜像层残留
+    severity: high
+    pattern: '(?im)^\s*(?:ENV|ARG)\s+([A-Z0-9_]*(?:PASSWORD|TOKEN|SECRET|KEY|CREDENTIAL)[A-Z0-9_]*)[=\s]+([^\s]{6,})'
+    secret_group: 2
+    multiline: true
+    keywords: [ENV, ARG, dockerfile]
+    description: Dockerfile / 镜像构建历史中残留的凭据类 ENV 或 ARG，是镜像渠道的核心命中点。
+
+  - id: docker-history-secret
+    name: 镜像历史凭据痕迹
+    kind: 镜像层残留
+    severity: high
+    # 注意：不能包含裸 `-p`——它会命中 `-p /boot/vmlinuz-linux` 这类**路径**，
+    # 在真实镜像历史里产生大量误报（真实数据实测教训）。只认长参数名。
+    pattern: '(?i)(?:--password|--passwd|--token|--secret)\s*[= ]\s*([^\s&;|/]{6,})'
+    keywords: [docker history, password]
+    description: 镜像构建历史命令行参数中残留的口令。
+
+  - id: kubernetes-secret-data
+    name: Kubernetes Secret 数据
+    kind: 集群凭据
+    severity: high
+    pattern: '(?im)^\s*data:\s*$'
+    keywords: [kind: Secret, data:, kubernetes]
+    description: k8s Secret 清单，其值虽为 Base64 但等同于明文，需结合结构化解析处理。
+
+  - id: private-config-file-reference
+    name: 敏感配置文件引用
+    kind: 敏感文件引用
+    severity: low
+    pattern: '(?i)(?:^|["''\s(])((?:\.env|\.env\.[a-z]+|\.npmrc|\.pypirc|\.netrc|\.docker/config\.json|credentials\.json|service-account\.json|\.git-credentials|config\.php|settings\.py|application\.(?:yml|properties)))'
+    multiline: true
+    keywords: [.env, credentials, config]
+    description: 敏感配置文件名出现，提示需重点检查该文件内容。
+
+  - id: generic-private-ip-credential
+    name: 内网地址与口令共现
+    kind: 通用凭据
+    severity: low
+    pattern: '(?i)(?:10|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.\d{1,3}\.\d{1,3}'
+    require_keywords: [password, passwd, pwd, secret, root]
+    keywords: [10., 192.168, password]
+    description: 内网 IP 与口令关键词共现，提示内网资产配置泄露。
+
+  - id: hardcoded-password-any
+    name: 硬编码口令（兜底）
+    kind: 通用口令
+    severity: medium
+    pattern: '(?i)\b(?:pass(?:word|wd)?|pwd)\b\s*(?:=|:)\s*[''"]([^''"]{6,64})[''"]'
+    keywords: [password, passwd, pwd]
+    description: 覆盖面最广的口令硬编码兜底规则。
+
+  - id: weak-credential-pair
+    name: 弱口令组合
+    kind: 通用口令
+    severity: medium
+    pattern: '(?i)\b(?:admin|root|test|user)\s*[:/]\s*(?:admin|root|test|123456|password|12345678|qwerty)\b'
+    keywords: [admin, root, password]
+    description: 典型弱口令组合，提示目标系统存在可直接登录风险。

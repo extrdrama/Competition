@@ -1,0 +1,378 @@
+# ============================================================
+# 代码托管平台、CI/CD 与研发工具链凭据检测规则
+# 全部由本项目自行编写，格式依据各平台官方文档公开说明。
+# ============================================================
+category: vcs_ci
+label: 代码托管与 CI/CD 凭据
+rules:
+  - id: github-pat-classic
+    name: GitHub 经典个人访问令牌
+    kind: 代码托管令牌
+    severity: critical
+    pattern: '(?<![A-Za-z0-9_])(ghp_[A-Za-z0-9]{36})(?![A-Za-z0-9])'
+    keywords: [github, ghp_]
+    validator: github
+    description: GitHub Classic PAT，可读写仓库、触发工作流。
+
+  - id: github-pat-fine-grained
+    name: GitHub 细粒度个人访问令牌
+    kind: 代码托管令牌
+    severity: critical
+    pattern: '(?<![A-Za-z0-9_])(github_pat_[A-Za-z0-9_]{22,255})(?![A-Za-z0-9])'
+    keywords: [github, github_pat_]
+    validator: github
+    description: GitHub Fine-grained PAT。
+
+  - id: github-oauth-token
+    name: GitHub OAuth 令牌
+    kind: 代码托管令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(gho_[A-Za-z0-9]{36})(?![A-Za-z0-9])'
+    keywords: [github, gho_]
+    validator: github
+    description: GitHub OAuth Access Token。
+
+  - id: github-app-token
+    name: GitHub App 安装令牌
+    kind: 代码托管令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(ghs_[A-Za-z0-9]{36})(?![A-Za-z0-9])'
+    keywords: [github, ghs_]
+    validator: github
+    description: GitHub App Installation Token。
+
+  - id: github-refresh-token
+    name: GitHub 刷新令牌
+    kind: 代码托管令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(ghr_[A-Za-z0-9]{36})(?![A-Za-z0-9])'
+    keywords: [github, ghr_]
+    description: GitHub Refresh Token，可用于换取新的访问令牌。
+
+  - id: github-legacy-token
+    name: GitHub 旧版 40 位令牌
+    kind: 代码托管令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9])([a-f0-9]{40})(?![A-Za-z0-9])'
+    require_keywords: [github, oauth, token]
+    keywords: [github, git_token]
+    description: GitHub 早期格式令牌，需上下文关键词共现确认。
+
+  - id: gitlab-pat
+    name: GitLab 个人访问令牌
+    kind: 代码托管令牌
+    severity: critical
+    pattern: '(?<![A-Za-z0-9_-])(glpat-[A-Za-z0-9_-]{20})(?![A-Za-z0-9_-])'
+    keywords: [gitlab, glpat]
+    validator: gitlab
+    description: GitLab Personal Access Token。
+
+  - id: gitlab-runner-token
+    name: GitLab Runner 注册令牌
+    kind: 代码托管令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(glrt-[A-Za-z0-9_-]{20,24})(?![A-Za-z0-9_-])'
+    keywords: [gitlab, glrt]
+    description: GitLab Runner Authentication Token。
+
+  - id: gitlab-pipeline-trigger-token
+    name: GitLab 流水线触发令牌
+    kind: 代码托管令牌
+    severity: medium
+    pattern: '(?i)CI_JOB_TOKEN\s*[=:]\s*[''"]?([A-Za-z0-9_-]{20,})'
+    keywords: [ci_job_token, gitlab]
+    description: GitLab CI Job Token。
+
+  - id: gitee-pat
+    name: Gitee 私人令牌
+    kind: 代码托管令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9])([a-f0-9]{32})(?![A-Za-z0-9])'
+    require_keywords: [gitee, access_token, private_token]
+    keywords: [gitee]
+    description: Gitee 私人令牌（32 位十六进制，需上下文关键词确认）。
+
+  - id: bitbucket-app-password
+    name: Bitbucket 应用密码
+    kind: 代码托管凭据
+    severity: high
+    pattern: '(?i)bitbucket.{0,30}?(?:app[_-]?password|password)\s*[=:]\s*[''"]?([A-Za-z0-9]{20,40})[''"]?'
+    keywords: [bitbucket]
+    description: Bitbucket App Password。
+
+  - id: azure-devops-pat
+    name: Azure DevOps 个人访问令牌
+    kind: 代码托管令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9])([a-z0-9]{52})(?![A-Za-z0-9])'
+    require_keywords: [dev.azure.com, azuredevops, visualstudio.com, System.AccessToken]
+    keywords: [dev.azure.com, azuredevops]
+    description: Azure DevOps PAT（52 位小写字母数字）。
+
+  - id: jenkins-api-token
+    name: Jenkins API 令牌
+    kind: CI/CD 凭据
+    severity: high
+    pattern: '(?i)jenkins.{0,30}?(?:api[_-]?token|password|credentials)\s*[=:]\s*[''"]?([a-f0-9]{32,36})[''"]?'
+    keywords: [jenkins, hudson]
+    description: Jenkins API Token 或凭据。
+
+  - id: jenkins-crumb
+    name: Jenkins CSRF Crumb
+    kind: CI/CD 凭据
+    severity: low
+    pattern: '(?i)jenkins-crumb\s*[=:]\s*[''"]?([a-f0-9]{32,})'
+    keywords: [jenkins-crumb]
+    description: Jenkins CSRF 令牌，需与账号口令配合才能利用。
+
+  - id: travis-ci-token
+    name: Travis CI 令牌
+    kind: CI/CD 凭据
+    severity: high
+    pattern: '(?i)travis.{0,30}?(?:token|api[_-]?token)\s*[=:]\s*[''"]?([A-Za-z0-9_-]{22,})[''"]?'
+    keywords: [travis]
+    description: Travis CI API Token。
+
+  - id: circleci-token
+    name: CircleCI 令牌
+    kind: CI/CD 凭据
+    severity: high
+    pattern: '(?<![A-Za-z0-9])([a-f0-9]{40}-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})'
+    keywords: [circleci]
+    description: CircleCI Personal API Token（UUID v4 变体格式）。
+
+  - id: drone-ci-token
+    name: Drone CI 令牌
+    kind: CI/CD 凭据
+    severity: medium
+    pattern: '(?i)drone.{0,30}?(?:token|secret)\s*[=:]\s*[''"]?([A-Za-z0-9_-]{30,40})[''"]?'
+    keywords: [drone]
+    description: Drone CI 访问令牌。
+
+  - id: argocd-token
+    name: ArgoCD 令牌
+    kind: CI/CD 凭据
+    severity: high
+    pattern: '(?<![A-Za-z0-9._-])(eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_-]{40,}\.[A-Za-z0-9_-]{40,})'
+    keywords: [argocd, argocd_token]
+    description: ArgoCD JWT 令牌，可直接操作集群交付流水线。
+
+  - id: dockerhub-pat
+    name: Docker Hub 访问令牌
+    kind: 镜像仓库令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(dckr_pat_[A-Za-z0-9_-]{27,})(?![A-Za-z0-9_-])'
+    keywords: [dockerhub, dckr_pat]
+    description: Docker Hub Personal Access Token。
+
+  - id: dockerhub-password
+    name: Docker Hub 账号口令
+    kind: 镜像仓库凭据
+    severity: high
+    pattern: '(?i)docker.{0,20}?(?:password|pass|pwd)\s*[=:]\s*[''"]?([^\s''"]{8,})[''"]?'
+    keywords: [docker, dockerhub]
+    description: Docker 账号口令，常见于 .docker/config.json 或 CI 变量。
+
+  - id: npm-token
+    name: npm 访问令牌
+    kind: 包仓库令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(npm_[A-Za-z0-9]{36})(?![A-Za-z0-9])'
+    keywords: [npm, npmrc]
+    description: npm Automation/Publish Token，可发布恶意包或删除包。
+
+  - id: pypi-token
+    name: PyPI 上传令牌
+    kind: 包仓库令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(pypi-[A-Za-z0-9_-]{50,})(?![A-Za-z0-9_-])'
+    keywords: [pypi, twine]
+    description: PyPI API Token，可发布恶意包实现供应链投毒。
+
+  - id: nuget-api-key
+    name: NuGet API Key
+    kind: 包仓库令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9])(oy2[a-z0-9]{43})(?![A-Za-z0-9])'
+    keywords: [nuget]
+    description: NuGet API Key。
+
+  - id: sonarqube-token
+    name: SonarQube 令牌
+    kind: 平台令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9])(squ_[a-f0-9]{40})(?![A-Za-z0-9])'
+    keywords: [sonar, sonarqube]
+    description: SonarQube/SonarCloud 用户令牌。
+
+  - id: heroku-api-key
+    name: Heroku API Key
+    kind: 平台令牌
+    severity: high
+    pattern: '(?i)heroku.{0,30}?(?:api[_-]?key|token)\s*[=:]\s*[''"]?([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})[''"]?'
+    keywords: [heroku]
+    description: Heroku API Key。
+
+  - id: vercel-token
+    name: Vercel 令牌
+    kind: 平台令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9_])(vercel_[A-Za-z0-9]{24,})(?![A-Za-z0-9])'
+    keywords: [vercel]
+    description: Vercel 部署令牌。
+
+  - id: netlify-token
+    name: Netlify 令牌
+    kind: 平台令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9_-])(nfp_[A-Za-z0-9]{40,})(?![A-Za-z0-9_-])'
+    keywords: [netlify]
+    description: Netlify Personal Access Token。
+
+  - id: sentry-dsn
+    name: Sentry DSN
+    kind: 平台凭据
+    severity: low
+    pattern: 'https://([a-f0-9]{32})@o\d+\.ingest\.sentry\.io/\d+'
+    keywords: [sentry, dsn]
+    description: Sentry DSN，可用于向项目注入伪造错误事件。
+
+  - id: sentry-auth-token
+    name: Sentry 认证令牌
+    kind: 平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9])(sntrys_[A-Za-z0-9_-]{60,})(?![A-Za-z0-9])'
+    keywords: [sentry]
+    description: Sentry Auth Token。
+
+  - id: datadog-api-key
+    name: Datadog API Key
+    kind: 监控平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9])([a-f0-9]{32})(?![A-Za-z0-9])'
+    require_keywords: [datadog, dd_api_key, DD_API_KEY]
+    keywords: [datadog]
+    description: Datadog API Key（32 位十六进制 + 上下文关键词）。
+
+  - id: datadog-app-key
+    name: Datadog App Key
+    kind: 监控平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9])([a-f0-9]{40})(?![A-Za-z0-9])'
+    require_keywords: [datadog, dd_app_key, DD_APP_KEY]
+    keywords: [datadog]
+    description: Datadog Application Key。
+
+  - id: newrelic-api-key
+    name: New Relic API Key
+    kind: 监控平台令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9])(NRAK-[A-Z0-9]{27})(?![A-Za-z0-9])'
+    keywords: [newrelic, NRAK]
+    description: New Relic User API Key。
+
+  - id: grafana-api-key
+    name: Grafana 服务账号令牌
+    kind: 监控平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(glsa_[A-Za-z0-9]{32}_[A-Fa-f0-9]{8})(?![A-Za-z0-9_])'
+    keywords: [grafana, glsa]
+    description: Grafana Service Account Token。
+
+  - id: slack-bot-token
+    name: Slack 机器人令牌
+    kind: 协作平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9-])(xoxb-\d{10,13}-\d{10,13}-[A-Za-z0-9]{24,})(?![A-Za-z0-9])'
+    keywords: [slack, xoxb]
+    validator: slack
+    description: Slack Bot Token，可读取频道历史与文件。
+
+  - id: slack-user-token
+    name: Slack 用户令牌
+    kind: 协作平台令牌
+    severity: critical
+    pattern: '(?<![A-Za-z0-9-])(xoxp-\d{10,13}-\d{10,13}-\d{10,13}-[a-f0-9]{32})(?![A-Za-z0-9])'
+    keywords: [slack, xoxp]
+    validator: slack
+    description: Slack User Token，权限高于机器人令牌。
+
+  - id: slack-webhook
+    name: Slack Webhook 地址
+    kind: 协作平台凭据
+    severity: low
+    pattern: 'https://hooks\.slack\.com/services/T[A-Za-z0-9]{8,}/B[A-Za-z0-9]{8,}/[A-Za-z0-9]{20,}'
+    keywords: [slack, webhook]
+    description: Slack Incoming Webhook，可向群组注入消息。
+
+  - id: discord-webhook
+    name: Discord Webhook 地址
+    kind: 协作平台凭据
+    severity: low
+    pattern: 'https://(?:ptb\.|canary\.)?discord(?:app)?\.com/api/webhooks/\d{17,20}/[A-Za-z0-9_-]{60,}'
+    keywords: [discord, webhook]
+    description: Discord Webhook 地址。
+
+  - id: telegram-bot-token
+    name: Telegram 机器人令牌
+    kind: 协作平台令牌
+    severity: medium
+    pattern: '(?<![0-9])(\d{8,10}:[A-Za-z0-9_-]{35})(?![A-Za-z0-9_-])'
+    keywords: [telegram, bot_token]
+    description: Telegram Bot Token。
+
+  - id: wecom-webhook
+    name: 企业微信机器人 Webhook
+    kind: 协作平台凭据
+    severity: low
+    pattern: 'https://qyapi\.weixin\.qq\.com/cgi-bin/webhook/send\?key=[a-f0-9-]{36}'
+    keywords: [qyapi.weixin.qq.com, webhook]
+    description: 企业微信机器人 Webhook 地址。
+
+  - id: dingtalk-webhook
+    name: 钉钉机器人 Webhook
+    kind: 协作平台凭据
+    severity: low
+    pattern: 'https://oapi\.dingtalk\.com/robot/send\?access_token=[a-f0-9]{64}'
+    keywords: [oapi.dingtalk.com, access_token]
+    description: 钉钉机器人 Webhook 地址与 access_token。
+
+  - id: feishu-webhook
+    name: 飞书机器人 Webhook
+    kind: 协作平台凭据
+    severity: low
+    pattern: 'https://open\.(?:feishu\.cn|larksuite\.com)/open-apis/bot/v2/hook/[a-f0-9-]{36}'
+    keywords: [feishu, larksuite, hook]
+    description: 飞书/Lark 机器人 Webhook 地址。
+
+  - id: jira-api-token
+    name: Jira API 令牌
+    kind: 协作平台令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9])(ATATT3xFfGF0[A-Za-z0-9_-]{100,})(?![A-Za-z0-9])'
+    keywords: [jira, atlassian]
+    description: Atlassian/Jira API Token。
+
+  - id: confluence-api-token
+    name: Confluence API 令牌
+    kind: 协作平台令牌
+    severity: medium
+    pattern: '(?i)(?:confluence|atlassian).{0,25}?(?:api[_-]?token|token)\s*[=:]\s*[''"]?([A-Za-z0-9]{24,})[''"]?'
+    keywords: [confluence, atlassian]
+    description: Confluence API Token。
+
+  - id: sonar-cloud-token
+    name: SonarCloud 令牌
+    kind: 平台令牌
+    severity: medium
+    pattern: '(?i)sonar.{0,25}?(?:token|login)\s*[=:]\s*[''"]?([A-Za-z0-9]{40})[''"]?'
+    keywords: [sonarcloud]
+    description: SonarCloud Token。
+
+  - id: snyk-token
+    name: Snyk API 令牌
+    kind: 平台令牌
+    severity: medium
+    pattern: '(?i)snyk.{0,25}?token\s*[=:]\s*[''"]?([a-f0-9-]{36})[''"]?'
+    keywords: [snyk]
+    description: Snyk API Token。

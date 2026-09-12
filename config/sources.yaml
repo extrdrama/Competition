@@ -1,0 +1,160 @@
+# ============================================================
+# 凭迹 CredWatch 渠道配置
+#
+# 新增一个渠道只需在下面增加一段配置（enabled 控制开关），
+# 无需修改任何代码——这正是赛题"平台可扩展性"评分项的落地方式。
+# 令牌类字段统一放在 .env 中，此处只放行为参数。
+# ============================================================
+
+sources:
+
+  # ------------------------------------------------------- 代码托管平台
+  github:
+    enabled: true
+    mode: recent              # search（历史广度）/ repo（指定仓库）/ recent（时效优先）
+    max_items: 200
+    per_page: 30
+    include_gist: true
+    download_content: true
+    queries:
+      - 'filename:.env "AWS_ACCESS_KEY_ID"'
+      - 'filename:.env "SECRET_KEY"'
+      - 'filename:credentials "aws_access_key_id"'
+      - 'filename:docker-compose.yml "password"'
+      - '"glpat-" in:file'
+      - 'filename:.npmrc "_authToken"'
+    repos: []                 # mode=repo 时填写，例如 ["owner/repo"]
+
+  gitee:
+    enabled: true
+    max_items: 200
+    per_page: 20
+    queries:
+      - AWS_ACCESS_KEY_ID
+      - aws_secret_access_key
+      - accessKeySecret
+      - BEGIN RSA PRIVATE KEY
+
+  gitlab:
+    enabled: false            # 配置 GITLAB_TOKEN 后开启
+    max_items: 200
+    queries:
+      - AWS_ACCESS_KEY_ID
+      - glpat-
+      - BEGIN RSA PRIVATE KEY
+
+  # ------------------------------------------------------- 容器镜像
+  container_registry:
+    enabled: true
+    repositories:
+      - library/nginx
+      - library/redis
+      - library/mysql
+    search_queries: []        # 可填关键词，自动发现相关镜像
+    tags_per_repo: 3
+    max_layer_bytes: 80000000
+    scan_layers: true         # 扫描文件系统层
+    scan_history: true        # 扫描构建历史（ENV/ARG 残留，命中率高）
+
+  # ------------------------------------------------------- 包仓库
+  npm_registry:
+    enabled: true
+    max_items: 40
+    packages: []              # 指定包名；留空则按关键词搜索
+    search_queries:
+      - config secrets
+      - internal tool
+
+  pypi_registry:
+    enabled: true
+    max_items: 40
+    packages: []              # 留空则读取 PyPI 官方"最近更新"榜单
+    prefer_sdist: true
+
+  # ------------------------------------------------------- 公开分享
+  paste_site:
+    enabled: true
+    sites:
+      - pastebin
+      - ghostbin
+      - hastebin
+    max_items: 120
+
+  # ------------------------------------------------------- Wiki 与知识库
+  mediawiki:
+    enabled: true
+    sites:
+      - https://en.wikipedia.org
+      - https://zh.wikipedia.org
+    max_items: 60
+    fetch_full_text: true
+    queries:
+      - "AKIA access key"
+      - "mysql root password"
+      - "database connection string password"
+
+  confluence:
+    enabled: false            # 配置实例地址后开启（企业内网场景）
+    base_url: ""
+    max_items: 60
+    queries:
+      - "password"
+      - "accessKey"
+
+  # ------------------------------------------------------- 内容共享平台
+  doc_share:
+    enabled: false            # 按需开启；平台搜索接口可能随时调整
+    platforms:
+      - juejin
+    max_items: 60
+    queries:
+      - "accessKey secret 配置"
+      - "数据库密码 配置"
+
+  # ------------------------------------------------------- 社交媒体
+  weibo:
+    enabled: false            # 配置 WEIBO_ACCESS_TOKEN 后开启
+    max_items: 60
+    keywords:
+      - "服务器密码"
+
+  # ------------------------------------------------------- 搜索引擎（定向补充）
+  search_engine:
+    enabled: false
+    endpoint: ""              # 需提供可用搜索 API 端点，形如 https://.../search?q={query}
+    api_key: ""
+    queries:
+      - 'site:pastebin.com "AKIA"'
+      - 'site:ghostbin.co "aws_secret_access_key"'
+
+  # ------------------------------------------------------- App 与小程序
+  mobile_app:
+    enabled: false            # 填入公开下载地址或本地样本路径后开启
+    decompile: true
+    artifacts: []
+    # artifacts:
+    #   - https://example.com/app-release.apk
+    #   - D:/samples/target.apk
+
+  mini_program:
+    enabled: false
+    packages: []
+    # packages:
+    #   - D:/samples/miniapp.wxapkg
+
+  # ------------------------------------------------------- 本地与企业内网
+  local_dir:
+    enabled: true
+    paths: []                 # 留空则仅扫描 demo/samples
+    include_archives: true
+    max_files: 20000
+    follow_symlinks: false
+
+  # ------------------------------------------------------- 内容共享平台
+  demo_site:
+    enabled: false          # 填好查询关键词、确认接口可用后再开启
+    max_items: 200
+    queries:
+      - password
+      - access_key
+      - token

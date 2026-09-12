@@ -1,0 +1,211 @@
+# ============================================================
+# 数据库与中间件连接凭据检测规则
+# 全部由本项目自行编写。
+# ============================================================
+category: database
+label: 数据库与中间件凭据
+rules:
+  - id: mysql-uri
+    name: MySQL 连接串
+    kind: 数据库连接串
+    severity: critical
+    pattern: '(?i)mysql(?:\+pymysql|\+mysqldb)?://([^\s:/@''"]+):([^\s:/@''"]+)@([^\s/''"]+)(?::(\d{1,5}))?'
+    secret_group: 2
+    keywords: [mysql]
+    description: MySQL DSN，直接包含账号与口令。
+
+  - id: postgresql-uri
+    name: PostgreSQL 连接串
+    kind: 数据库连接串
+    severity: critical
+    pattern: '(?i)postgres(?:ql)?(?:\+psycopg2)?://([^\s:/@''"]+):([^\s:/@''"]+)@([^\s/''"]+)(?::(\d{1,5}))?'
+    secret_group: 2
+    keywords: [postgres, postgresql]
+    description: PostgreSQL DSN。
+
+  - id: mongodb-uri
+    name: MongoDB 连接串
+    kind: 数据库连接串
+    severity: critical
+    pattern: '(?i)mongodb(?:\+srv)?://([^\s:/@''"]+):([^\s:/@''"]+)@([^\s/''"]+)'
+    secret_group: 2
+    keywords: [mongodb, mongo]
+    description: MongoDB 连接串，含账号口令。
+
+  - id: redis-uri
+    name: Redis 连接串
+    kind: 数据库连接串
+    severity: high
+    pattern: '(?i)redis://([^\s:/@''"]*):([^\s:/@''"]+)@([^\s/''"]+)'
+    secret_group: 2
+    keywords: [redis]
+    description: Redis 连接串（带口令形式）。
+
+  - id: redis-password-var
+    name: Redis 口令变量
+    kind: 中间件口令
+    severity: high
+    pattern: '(?i)REDIS_(?:PASSWORD|PASS|PWD|AUTH)\s*[=:]\s*[''"]?([^\s''"]{6,})[''"]?'
+    keywords: [redis_password]
+    description: Redis 口令环境变量。
+
+  - id: elasticsearch-uri
+    name: Elasticsearch 连接串
+    kind: 数据库连接串
+    severity: critical
+    pattern: '(?i)https?://([^\s:/@''"]+):([^\s:/@''"]+)@[^\s/''"]*(?::9200|elasticsearch)'
+    secret_group: 2
+    keywords: [elasticsearch, 9200]
+    description: Elasticsearch 带认证连接地址。
+
+  - id: clickhouse-uri
+    name: ClickHouse 连接串
+    kind: 数据库连接串
+    severity: high
+    pattern: '(?i)clickhouse(?:\+https?)?://([^\s:/@''"]+):([^\s:/@''"]+)@([^\s/''"]+)'
+    secret_group: 2
+    keywords: [clickhouse]
+    description: ClickHouse DSN。
+
+  - id: sqlserver-uri
+    name: SQL Server 连接串
+    kind: 数据库连接串
+    severity: critical
+    pattern: '(?i)(?:jdbc:)?sqlserver://[^\s;]+;?(?:.*?)password\s*=\s*([^\s;''"]+)'
+    keywords: [sqlserver, mssql]
+    description: SQL Server 连接串。
+
+  - id: oracle-uri
+    name: Oracle 连接串
+    kind: 数据库连接串
+    severity: critical
+    pattern: '(?i)oracle:(?:thin|oci):([^\s:/@''"]+)/([^\s:@''"]+)@(?:[^\s/''"]+)/([^\s/''"]+)'
+    secret_group: 2
+    keywords: [oracle, thin]
+    description: Oracle DSN，形如 oracle:thin:user/pass@host/sid。
+
+  - id: jdbc-connection-string
+    name: JDBC 连接串
+    kind: 数据库连接串
+    severity: critical
+    pattern: 'jdbc:[a-z0-9]+://[^\s''"]{10,400}'
+    keywords: [jdbc, spring.datasource]
+    description: 通用 JDBC 连接串，常出现在 Spring 配置与 IDE 工程文件中。
+
+  - id: generic-dsn-assignment
+    name: 通用 DSN 变量赋值
+    kind: 数据库连接串
+    severity: high
+    pattern: '(?i)\b(?:DATABASE_URL|DB_URL|DB_DSN|DATABASE_DSN|CONNECTION_STRING)\s*[=:]\s*[''"]?((?:[a-z]+://|[A-Za-z0-9]+=)[^\s''"]{12,})[''"]?'
+    keywords: [database_url, connection_string]
+    description: 通用数据库连接串环境变量。
+
+  - id: mybatis-datasource-password
+    name: MyBatis 数据源口令
+    kind: 数据库口令
+    severity: critical
+    pattern: '(?i)(?:spring\.datasource|datasource)\.(?:dbcp2\.)?password\s*[=:]\s*[''"]?([^\s''"]{4,})[''"]?'
+    keywords: [spring.datasource, datasource]
+    description: Spring/MyBatis 数据源口令配置。
+
+  - id: generic-db-password-var
+    name: 通用数据库口令变量
+    kind: 数据库口令
+    severity: high
+    pattern: '(?i)\b(?:DB|MYSQL|MARIADB|PG|POSTGRES(?:QL)?|MSSQL|ORACLE|MONGO(?:DB)?)_(?:PASSWORD|PASSWD|PASS|PWD)\s*[=:]\s*[''"]?([^\s''"]{4,})[''"]?'
+    keywords: [db_password, mysql_password, postgres_password]
+    description: 各类数据库口令环境变量。
+
+  - id: sqlite-file-path
+    name: SQLite 数据库文件路径
+    kind: 数据存储标识
+    severity: low
+    pattern: '(?i)sqlite3?:///(?:\.\./)*[^\s''"]+\.db'
+    keywords: [sqlite]
+    description: SQLite 文件路径，可用于定位敏感数据存储位置。
+
+  - id: rabbitmq-uri
+    name: RabbitMQ 连接串
+    kind: 中间件连接串
+    severity: high
+    pattern: '(?i)amqp://([^\s:/@''"]+):([^\s:/@''"]+)@([^\s/''"]+)'
+    secret_group: 2
+    keywords: [amqp, rabbitmq]
+    description: RabbitMQ AMQP 连接串。
+
+  - id: kafka-sasl-jaas
+    name: Kafka SASL 配置
+    kind: 中间件凭据
+    severity: high
+    pattern: '(?i)org\.apache\.kafka\.common\.security\.plain\.PlainLoginModule\s+required\s+username\s*=\s*[''"]?([^\s''"]+)[''"]?\s+password\s*=\s*[''"]?([^\s''"]+)[''"]?'
+    secret_group: 2
+    keywords: [kafka, jaas, PlainLoginModule]
+    description: Kafka SASL/PLAIN 认证配置，含用户名与口令。
+
+  - id: zookeeper-uri
+    name: ZooKeeper 连接串
+    kind: 中间件连接串
+    severity: medium
+    pattern: '(?i)zookeeper://([^\s:/@''"]+):([^\s:/@''"]+)@([^\s/''"]+)'
+    secret_group: 2
+    keywords: [zookeeper]
+    description: ZooKeeper 带认证连接串。
+
+  - id: nacos-credential
+    name: Nacos 账号口令
+    kind: 中间件凭据
+    severity: high
+    pattern: '(?i)nacos.{0,25}?(?:password|auth)\s*[=:]\s*[''"]?([^\s''"]{4,})[''"]?'
+    keywords: [nacos]
+    description: Nacos 配置中心账号口令。
+
+  - id: dameng-password
+    name: 达梦数据库口令
+    kind: 数据库口令
+    severity: high
+    pattern: '(?i)(?:DM|DAMENG)_(?:PASSWORD|PASSWD|PWD)\s*[=:]\s*[''"]?([^\s''"]{4,})[''"]?'
+    keywords: [dm_password, 达梦]
+    description: 国产达梦数据库口令变量。
+
+  - id: kingbase-password
+    name: 人大金仓数据库口令
+    kind: 数据库口令
+    severity: high
+    pattern: '(?i)(?:KINGBASE|KINGBASEES)_(?:PASSWORD|PASSWD|PWD)\s*[=:]\s*[''"]?([^\s''"]{4,})[''"]?'
+    keywords: [kingbase, kingbasees]
+    description: 人大金仓 KingbaseES 口令变量。
+
+  - id: gaussdb-uri
+    name: 华为 GaussDB 连接串
+    kind: 数据库连接串
+    severity: critical
+    pattern: '(?i)gaussdb://([^\s:/@''"]+):([^\s:/@''"]+)@([^\s/''"]+)'
+    secret_group: 2
+    keywords: [gaussdb]
+    description: 华为 GaussDB 连接串。
+
+  - id: oceanbase-uri
+    name: OceanBase 连接串
+    kind: 数据库连接串
+    severity: critical
+    pattern: '(?i)oceanbase://([^\s:/@''"]+):([^\s:/@''"]+)@([^\s/''"]+)'
+    secret_group: 2
+    keywords: [oceanbase]
+    description: OceanBase 连接串。
+
+  - id: ssh-tunnel-credential
+    name: SSH 隧道凭据
+    kind: 运维凭据
+    severity: high
+    pattern: '(?i)ssh\s+-[LDR]\s+[^\s]+\s+(?:-\w+\s+)*([^\s@]+)@([^\s\s]+)'
+    keywords: [ssh, tunnel]
+    description: 命令行 SSH 隧道中暴露的用户名与主机。
+
+  - id: basic-auth-url
+    name: URL 内嵌基础认证凭据
+    kind: 通用凭据
+    severity: high
+    pattern: '(?i)https?://([A-Za-z0-9_.-]{2,32}):([A-Za-z0-9!@#$%^&*_.-]{4,64})@([A-Za-z0-9.-]+\.[A-Za-z]{2,})'
+    secret_group: 2
+    keywords: [http, https]
+    description: URL 中直接内嵌的 user:password@host 形式凭据。

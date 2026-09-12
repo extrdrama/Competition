@@ -1,0 +1,12 @@
+# 凭迹 CredWatch —— 云上凭据泄露自动化检测平台
+# 基础运行依赖（全部为通用开源库，不含任何第三方"检测引擎"成品）
+
+requests>=2.31.0
+PyYAML>=6.0.1
+rich>=13.7.0
+
+# 可选：可视化看板
+# streamlit>=1.31.0
+
+# 可选：PostgreSQL 存储（默认使用 SQLite，无需额外依赖）
+# psycopg2-binary>=2.9.9

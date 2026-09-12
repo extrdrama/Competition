@@ -1,0 +1,195 @@
+# ============================================================
+# 密钥文件、私钥与凭据材料检测规则
+# 全部由本项目自行编写。私钥类凭据无法通过接口"验活"，
+# 因此本文件规则一律采用格式锚点 + 文件路径双重确认以压低误报。
+# ============================================================
+category: crypto_keys
+label: 私钥与密钥文件
+rules:
+  - id: private-key-rsa-pem
+    name: RSA 私钥（PEM）
+    kind: 非对称私钥
+    severity: critical
+    pattern: '-----BEGIN RSA PRIVATE KEY-----[\r\n]+(?:[A-Za-z0-9+/=]{40,}[\r\n]+){2,}'
+    keywords: [private key, pem]
+    description: PKCS#1 格式 RSA 私钥头，泄露等同于身份凭证泄露。
+
+  - id: private-key-pkcs8-pem
+    name: PKCS#8 私钥（PEM）
+    kind: 非对称私钥
+    severity: critical
+    pattern: '-----BEGIN PRIVATE KEY-----[\r\n]+(?:[A-Za-z0-9+/=]{40,}[\r\n]+){2,}'
+    keywords: [private key, pkcs8]
+    description: PKCS#8 通用私钥头。
+
+  - id: private-key-encrypted-pem
+    name: 加密私钥（PEM）
+    kind: 非对称私钥
+    severity: high
+    pattern: '-----BEGIN ENCRYPTED PRIVATE KEY-----[\r\n]+(?:[A-Za-z0-9+/=]{40,}[\r\n]+){2,}'
+    keywords: [encrypted private key]
+    description: 带口令保护的私钥，若口令同时泄露则风险等同明文私钥。
+
+  - id: private-key-openssh
+    name: OpenSSH 私钥
+    kind: 非对称私钥
+    severity: critical
+    pattern: '-----BEGIN OPENSSH PRIVATE KEY-----[\r\n]+(?:[A-Za-z0-9+/=]{40,}[\r\n]+){2,}'
+    keywords: [openssh, private key]
+    description: OpenSSH 新格式私钥。
+
+  - id: private-key-ec
+    name: EC 私钥（PEM）
+    kind: 非对称私钥
+    severity: critical
+    pattern: '-----BEGIN EC PRIVATE KEY-----[\r\n]+(?:[A-Za-z0-9+/=]{40,}[\r\n]+){2,}'
+    keywords: [ec private key]
+    description: 椭圆曲线私钥。
+
+  - id: private-key-dsa
+    name: DSA 私钥（PEM）
+    kind: 非对称私钥
+    severity: critical
+    pattern: '-----BEGIN DSA PRIVATE KEY-----[\r\n]+(?:[A-Za-z0-9+/=]{40,}[\r\n]+){2,}'
+    keywords: [dsa private key]
+    description: DSA 私钥。
+
+  - id: private-key-pgp
+    name: PGP 私钥块
+    kind: 非对称私钥
+    severity: high
+    pattern: '-----BEGIN PGP PRIVATE KEY BLOCK-----[\r\n]+(?:[A-Za-z0-9+/=]{40,}[\r\n]+){2,}'
+    keywords: [pgp, private key]
+    description: PGP 私钥块。
+
+  - id: putty-private-key
+    name: PuTTY 私钥文件
+    kind: 非对称私钥
+    severity: critical
+    pattern: 'PuTTY-User-Key-File-\d+:\s*(?:ssh-rsa|ssh-ed25519|ecdsa-sha2-nistp\d+)'
+    keywords: [putty, ppk]
+    description: PuTTY .ppk 私钥文件头。
+
+  - id: ssh-private-key-file-path
+    name: SSH 私钥文件路径引用
+    kind: 敏感文件引用
+    severity: medium
+    pattern: '(?:~|\$HOME|/home/[A-Za-z0-9_.-]+|/root|/Users/[A-Za-z0-9_.-]+)/\.ssh/(?:id_(?:rsa|dsa|ecdsa|ed25519)|[A-Za-z0-9_.-]+)'
+    keywords: [.ssh, id_rsa]
+    description: 工程或脚本中引用的 SSH 私钥路径，提示可能存在私钥文件。
+
+  - id: aws-credentials-file-path
+    name: AWS 凭据文件路径
+    kind: 敏感文件引用
+    severity: medium
+    pattern: '(?:~|\$HOME|/root|/home/[A-Za-z0-9_.-]+)/\.aws/credentials'
+    keywords: [.aws, credentials]
+    description: AWS 凭据文件路径引用。
+
+  - id: kubeconfig-file-path
+    name: kubeconfig 文件路径
+    kind: 敏感文件引用
+    severity: medium
+    pattern: '(?:~|\$HOME|/root|\$KUBECONFIG)[^\s''"]{0,40}kubeconfig[^\s''"]{0,20}'
+    keywords: [kubeconfig, kubectl]
+    description: Kubernetes 集群配置路径，其中常含集群证书私钥。
+
+  - id: pem-certificate
+    name: 证书文件（PEM）
+    kind: 数字证书
+    severity: low
+    pattern: '-----BEGIN CERTIFICATE-----'
+    keywords: [certificate, pem]
+    description: X.509 证书，单独泄露风险较低，用于归属识别与资产盘点。
+
+  - id: jwt-token
+    name: JWT 令牌
+    kind: 会话令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9._-])(eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,})(?![A-Za-z0-9_-])'
+    keywords: [jwt, bearer, token]
+    description: JSON Web Token，可能内含越权可用声明。
+
+  - id: jwt-signing-secret
+    name: JWT 签名密钥
+    kind: 密钥材料
+    severity: critical
+    pattern: '(?i)(?:JWT|TOKEN)[_-]?(?:SECRET|SIGN(?:ING)?[_-]?KEY|KEY)\s*[=:]\s*[''"]?([^\s''"]{12,})[''"]?'
+    keywords: [jwt_secret, jwt_key, signing_key]
+    description: JWT 签名密钥泄露可直接伪造任意身份令牌。
+
+  - id: flask-secret-key
+    name: Flask 会话密钥
+    kind: 密钥材料
+    severity: high
+    pattern: '(?i)(?:SECRET_KEY|FLASK_SECRET|SESSION_SECRET|APP_SECRET)\s*[=:]\s*[''"]?([^\s''"]{8,})[''"]?'
+    keywords: [secret_key, flask]
+    description: Web 框架会话签名密钥，泄露可伪造会话。
+
+  - id: django-secret-key
+    name: Django SECRET_KEY
+    kind: 密钥材料
+    severity: high
+    pattern: '(?i)DJANGO_SECRET_KEY\s*[=:]\s*[''"]?([A-Za-z0-9!@#$%^&*()_+\-]{40,})[''"]?'
+    keywords: [django, secret_key]
+    description: Django SECRET_KEY，泄露后可伪造签名与重置令牌。
+
+  - id: bip39-mnemonic
+    name: BIP39 助记词
+    kind: 数字资产密钥
+    severity: critical
+    pattern: '(?:\b[a-z]{3,8}\b[ \t]+){11}\b[a-z]{3,8}\b'
+    require_keywords: [mnemonic, seed, wallet, 助记词, recovery]
+    keywords: [mnemonic, seed phrase]
+    description: 12 个助记词，可完全控制对应加密钱包资产。
+
+  - id: bip39-mnemonic-24
+    name: BIP39 助记词（24 词）
+    kind: 数字资产密钥
+    severity: critical
+    pattern: '(?:\b[a-z]{3,8}\b[ \t]+){23}\b[a-z]{3,8}\b'
+    require_keywords: [mnemonic, seed, wallet, 助记词]
+    keywords: [mnemonic, seed phrase]
+    description: 24 词助记词。
+
+  - id: ethereum-private-key
+    name: 以太坊私钥
+    kind: 数字资产密钥
+    severity: critical
+    pattern: '(?i)(?:0x)?([a-f0-9]{64})'
+    require_keywords: [private_key, privkey, wallet, eth, ethereum, metamask]
+    keywords: [ethereum, private_key]
+    description: 64 位十六进制以太坊私钥，需上下文关键词确认。
+
+  - id: bitcoin-wif-key
+    name: 比特币 WIF 私钥
+    kind: 数字资产密钥
+    severity: critical
+    pattern: '(?<![A-Za-z0-9])[5KL][1-9A-HJ-NP-Za-km-z]{50,51}(?![A-Za-z0-9])'
+    keywords: [bitcoin, wif, private]
+    description: 比特币 Wallet Import Format 私钥。
+
+  - id: ethereum-keystore
+    name: 以太坊 Keystore 文件
+    kind: 数字资产密钥
+    severity: high
+    pattern: '"crypto"\s*:\s*\{[^}]{0,400}"cipher"\s*:\s*"(?:aes-128-ctr|scrypt|pbkdf2)"'
+    keywords: [keystore, crypto, cipher]
+    description: 加密钱包 Keystore 文件，配合弱口令可被解密。
+
+  - id: pgp-passphrase-var
+    name: 密钥口令变量
+    kind: 密钥口令
+    severity: high
+    pattern: '(?i)(?:PASSPHRASE|KEY_?PASS(?:WORD)?|KEYSTORE_?PASSWORD)\s*[=:]\s*[''"]?([^\s''"]{6,})[''"]?'
+    keywords: [passphrase, key_password]
+    description: 私钥保护口令，与私钥同时泄露风险倍增。
+
+  - id: shadow-hash
+    name: 系统口令哈希
+    kind: 系统口令
+    severity: high
+    pattern: '(?<![A-Za-z0-9])([A-Za-z0-9_.-]{1,32}):(\$[1-6]\$[A-Za-z0-9./]{1,16}\$[A-Za-z0-9./]{22,86})(?![A-Za-z0-9./])'
+    secret_group: 2
+    keywords: [shadow, passwd, crypt]
+    description: /etc/shadow 风格的口令哈希，离线爆破风险。

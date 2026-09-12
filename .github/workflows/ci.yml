@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    name: 单元测试 + 规则库自检
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 运行单元测试
+        run: python -m unittest discover -s tests -t . -v
+
+      - name: 规则库自检
+        run: python -m credwatch lint-rules
+
+      - name: 离线演示（端到端冒烟）
+        run: |
+          CREDWATCH_DB=./data/ci.db python -m credwatch demo --out ./ci-output
+          test -f ./ci-output/latest_report.md
+
+  benchmark:
+    name: 性能基准冒烟
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      - name: 运行基准（小规模冒烟）
+        run: python -m credwatch bench --documents 200 --out ./ci-output/benchmark.json

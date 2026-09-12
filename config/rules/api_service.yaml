@@ -1,0 +1,302 @@
+# ============================================================
+# 第三方 API 服务、大模型平台与支付通道凭据检测规则
+# 全部由本项目自行编写。
+# ============================================================
+category: api_service
+label: 第三方 API 与支付凭据
+rules:
+  - id: openai-api-key
+    name: OpenAI API Key
+    kind: 大模型平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(sk-(?:proj-|svcacct-|admin-)?[A-Za-z0-9_-]{20,})'
+    keywords: [openai, api_key]
+    validator: openai
+    description: OpenAI API Key，泄露后可消耗额度并访问账号数据。
+
+  - id: anthropic-api-key
+    name: Anthropic API Key
+    kind: 大模型平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(sk-ant-[A-Za-z0-9_-]{80,})(?![A-Za-z0-9_-])'
+    keywords: [anthropic, claude]
+    validator: anthropic
+    description: Anthropic Claude API Key。
+
+  - id: deepseek-api-key
+    name: DeepSeek API Key
+    kind: 大模型平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(sk-[a-f0-9]{32})(?![A-Za-z0-9_-])'
+    keywords: [deepseek]
+    description: DeepSeek API Key。
+
+  - id: moonshot-api-key
+    name: Moonshot（Kimi）API Key
+    kind: 大模型平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(sk-[A-Za-z0-9]{48})(?![A-Za-z0-9_-])'
+    keywords: [moonshot, kimi]
+    description: Moonshot API Key。
+
+  - id: zhipu-api-key
+    name: 智谱 AI API Key
+    kind: 大模型平台令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9])([a-f0-9]{32}\.[A-Za-z0-9]{16})(?![A-Za-z0-9])'
+    keywords: [zhipu, bigmodel, glm]
+    description: 智谱 GLM API Key（id.secret 形式）。
+
+  - id: dashscope-api-key
+    name: 阿里云百炼 API Key
+    kind: 大模型平台令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9_-])(sk-[a-f0-9]{32})(?![A-Za-z0-9_-])'
+    # 与 DeepSeek 的正则完全相同，必须靠关键词区分，否则同一串会被两条规则争抢
+    require_keywords: [dashscope, bailian, qwen, 百炼]
+    keywords: [dashscope, bailian, qwen]
+    description: 阿里云百炼（DashScope）API Key。
+
+  - id: baidu-qianfan-ak-sk
+    name: 百度千帆 AK/SK
+    kind: 大模型平台令牌
+    severity: medium
+    pattern: '(?i)qianfan.{0,25}?(?:ak|access[_-]?key)\s*[=:]\s*[''"]?([A-Za-z0-9]{20,40})[''"]?'
+    keywords: [qianfan, 千帆]
+    description: 百度千帆平台 AK。
+
+  - id: xfyun-api-key
+    name: 讯飞星火 API 凭据
+    kind: 大模型平台令牌
+    severity: medium
+    pattern: '(?i)(?:xfyun|spark).{0,25}?(?:api[_-]?key|api[_-]?secret|appid)\s*[=:]\s*[''"]?([A-Za-z0-9]{16,40})[''"]?'
+    keywords: [xfyun, spark, 讯飞]
+    description: 讯飞星火平台 API Key/Secret。
+
+  - id: huggingface-token
+    name: Hugging Face 令牌
+    kind: 平台令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9_])(hf_[A-Za-z0-9]{34,40})(?![A-Za-z0-9])'
+    keywords: [huggingface, hf_token]
+    description: Hugging Face Access Token，可访问私有模型与数据集。
+
+  - id: stripe-secret-key
+    name: Stripe 密钥（secret）
+    kind: 支付密钥
+    severity: critical
+    pattern: '(?<![A-Za-z0-9_-])((?:sk|rk)_(?:live|test)_[A-Za-z0-9]{24,})(?![A-Za-z0-9])'
+    keywords: [stripe, sk_live, sk_test]
+    validator: stripe
+    description: Stripe 密钥，live 前缀可发起真实交易操作。
+
+  - id: stripe-restricted-key
+    name: Stripe 受限密钥
+    kind: 支付密钥
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(rk_live_[A-Za-z0-9]{24,})(?![A-Za-z0-9])'
+    keywords: [stripe, rk_live]
+    description: Stripe 受限密钥。
+
+  - id: paypal-client-secret
+    name: PayPal 客户端密钥
+    kind: 支付密钥
+    severity: high
+    pattern: '(?i)paypal.{0,30}?(?:client[_-]?secret|secret)\s*[=:]\s*[''"]?([A-Za-z0-9_-]{40,80})[''"]?'
+    keywords: [paypal, client_secret]
+    description: PayPal 应用客户端密钥。
+
+  - id: alipay-private-key
+    name: 支付宝应用私钥
+    kind: 支付密钥
+    severity: critical
+    pattern: '(?i)(?:alipay|蚂蚁).{0,30}?(?:private[_-]?key|app[_-]?private[_-]?key)\s*[=:]\s*[''"]?([A-Za-z0-9+/=]{100,})[''"]?'
+    keywords: [alipay, private_key]
+    description: 支付宝应用私钥，可伪造商户签名。
+
+  - id: alipay-app-id-keyword
+    name: 支付宝商户配置
+    kind: 支付凭据
+    severity: medium
+    pattern: '(?i)(?:ALIPAY|ALIPAY_APP_ID)\s*[=:]\s*[''"]?(\d{16})[''"]?'
+    keywords: [alipay_app_id, alipay]
+    description: 支付宝应用 APPID，配合私钥泄露风险更高。
+
+  - id: wechatpay-api-key
+    name: 微信支付 API 密钥
+    kind: 支付密钥
+    severity: critical
+    pattern: '(?i)(?:wechatpay|wxpay|WXPAY).{0,25}?(?:api[_-]?v?3?[_-]?key|apikey|key)\s*[=:]\s*[''"]?([A-Za-z0-9]{32})[''"]?'
+    keywords: [wechatpay, wxpay, api_key]
+    description: 微信支付 API 密钥（APIv3 key 或 APIv2 商户密钥）。
+
+  - id: wechatpay-mch-id
+    name: 微信支付商户号
+    kind: 支付凭据
+    severity: low
+    pattern: '(?i)(?:mch[_-]?id|merchant[_-]?id)\s*[=:]\s*[''"]?(\d{8,12})[''"]?'
+    keywords: [mch_id, merchant_id]
+    description: 微信支付商户号，用于归属识别。
+
+  - id: twilio-api-key
+    name: Twilio API Key
+    kind: 平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9])(SK[a-f0-9]{32})(?![A-Za-z0-9])'
+    keywords: [twilio]
+    validator: twilio
+    description: Twilio API Key SID。
+
+  - id: twilio-account-sid
+    name: Twilio Account SID
+    kind: 平台标识
+    severity: medium
+    pattern: '(?<![A-Za-z0-9])(AC[a-f0-9]{32})(?![A-Za-z0-9])'
+    keywords: [twilio, account_sid]
+    description: Twilio 账号 SID，需与 Auth Token 配合使用。
+
+  - id: twilio-auth-token
+    name: Twilio Auth Token
+    kind: 平台令牌
+    severity: high
+    pattern: '(?i)twilio.{0,30}?(?:auth[_-]?token|token)\s*[=:]\s*[''"]?([a-f0-9]{32})[''"]?'
+    keywords: [twilio, auth_token]
+    description: Twilio Auth Token。
+
+  - id: sendgrid-api-key
+    name: SendGrid API Key
+    kind: 邮件服务令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(SG\.[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43})(?![A-Za-z0-9_-])'
+    keywords: [sendgrid]
+    validator: sendgrid
+    description: SendGrid API Key，可代发邮件用于钓鱼。
+
+  - id: mailgun-api-key
+    name: Mailgun API Key
+    kind: 邮件服务令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9-])(key-[a-f0-9]{32})(?![A-Za-z0-9])'
+    keywords: [mailgun]
+    description: Mailgun API Key。
+
+  - id: mailchimp-api-key
+    name: Mailchimp API Key
+    kind: 邮件服务令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9])([a-f0-9]{32}-us\d{1,2})(?![A-Za-z0-9])'
+    keywords: [mailchimp]
+    description: Mailchimp API Key。
+
+  - id: postmark-token
+    name: Postmark 令牌
+    kind: 邮件服务令牌
+    severity: medium
+    pattern: '(?i)postmark.{0,25}?token\s*[=:]\s*[''"]?([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})[''"]?'
+    keywords: [postmark]
+    description: Postmark Server Token。
+
+  - id: amap-api-key
+    name: 高德地图 Key
+    kind: 平台令牌
+    severity: low
+    pattern: '(?i)(?:amap|gaode).{0,25}?(?:key|api[_-]?key)\s*[=:]\s*[''"]?([a-f0-9]{32})[''"]?'
+    keywords: [amap, gaode]
+    description: 高德地图 Web 服务 Key。
+
+  - id: tencent-map-key
+    name: 腾讯位置服务 Key
+    kind: 平台令牌
+    severity: low
+    pattern: '(?i)(?:qqmap|tencent[_-]?map|lbs).{0,25}?key\s*[=:]\s*[''"]?([A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5})[''"]?'
+    keywords: [qqmap, lbs]
+    description: 腾讯位置服务 Key。
+
+  - id: baidu-map-ak
+    name: 百度地图 AK
+    kind: 平台令牌
+    severity: low
+    pattern: '(?i)(?:baidu[_-]?map|bmap|ak).{0,25}?ak\s*[=:]\s*[''"]?([A-Za-z0-9]{24,32})[''"]?'
+    keywords: [bmap, baidu_map]
+    description: 百度地图 AK。
+
+  - id: firebase-server-key
+    name: Firebase 服务端密钥
+    kind: 平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(AAAA[a-zA-Z0-9_-]{7}:APA91b[a-zA-Z0-9_-]{140,})(?![A-Za-z0-9_-])'
+    keywords: [firebase, fcm]
+    description: Firebase Cloud Messaging 服务端密钥。
+
+  - id: firebase-config
+    name: Firebase 客户端配置
+    kind: 平台标识
+    severity: low
+    pattern: '(?i)apiKey"\s*:\s*"(AIza[0-9A-Za-z_-]{35})"'
+    keywords: [firebase, google-services]
+    description: Firebase 客户端配置中的 API Key（google-services.json 等）。
+
+  - id: onesignal-api-key
+    name: OneSignal API Key
+    kind: 推送服务令牌
+    severity: medium
+    pattern: '(?i)onesignal.{0,25}?(?:api[_-]?key|rest[_-]?api[_-]?key)\s*[=:]\s*[''"]?([A-Za-z0-9-]{30,50})[''"]?'
+    keywords: [onesignal]
+    description: OneSignal REST API Key。
+
+  - id: algolia-admin-key
+    name: Algolia Admin Key
+    kind: 搜索服务令牌
+    severity: medium
+    pattern: '(?i)algolia.{0,30}?(?:admin[_-]?key|api[_-]?key)\s*[=:]\s*[''"]?([a-f0-9]{32})[''"]?'
+    keywords: [algolia, admin_key]
+    description: Algolia Admin Key。
+
+  - id: google-recaptcha-secret
+    name: Google reCAPTCHA 密钥
+    kind: 平台密钥
+    severity: low
+    pattern: '(?<![A-Za-z0-9_-])(6L[a-zA-Z0-9_-]{38})(?![A-Za-z0-9_-])'
+    keywords: [recaptcha, 6L]
+    description: reCAPTCHA 站点或私钥。
+
+  - id: openweathermap-key
+    name: OpenWeatherMap API Key
+    kind: 平台令牌
+    severity: low
+    pattern: '(?<![A-Za-z0-9])([a-f0-9]{32})(?![A-Za-z0-9])'
+    require_keywords: [openweathermap, openweather, OWM_API]
+    keywords: [openweathermap]
+    description: OpenWeatherMap API Key（32 位十六进制 + 上下文关键词）。
+
+  - id: mapbox-token
+    name: Mapbox 访问令牌
+    kind: 平台令牌
+    severity: low
+    pattern: '(?<![A-Za-z0-9_.-])((?:pk|sk)\.eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,})(?![A-Za-z0-9_-])'
+    keywords: [mapbox]
+    description: Mapbox 公钥或私钥令牌。
+
+  - id: generic-api-key-variable
+    name: 通用 API Key 变量
+    kind: 通用 API 令牌
+    severity: medium
+    pattern: '(?i)\b(?:API[_-]?KEY|APIKEY|APP[_-]?KEY|ACCESS[_-]?TOKEN|AUTH[_-]?TOKEN|CLIENT[_-]?SECRET)\s*[=:]\s*[''"]?([A-Za-z0-9_\-./+=]{16,128})[''"]?'
+    keywords: [api_key, access_token, client_secret]
+    description: 通用 API Key / Token 变量赋值，是覆盖面最广的兜底规则。
+
+  - id: oauth-client-secret-generic
+    name: OAuth 客户端密钥（通用）
+    kind: OAuth Client Secret
+    severity: high
+    pattern: '(?i)\b(?:client[_-]?secret|consumer[_-]?secret|app[_-]?secret)\s*[=:]\s*[''"]?([A-Za-z0-9_\-]{16,128})[''"]?'
+    keywords: [client_secret, oauth]
+    description: 通用 OAuth Client Secret。
+
+  - id: oauth-client-id-generic
+    name: OAuth 客户端 ID（通用）
+    kind: OAuth 客户端标识
+    severity: low
+    pattern: '(?i)\b(?:client[_-]?id|consumer[_-]?key|app[_-]?id)\s*[=:]\s*[''"]?([A-Za-z0-9_\-]{16,64})[''"]?'
+    keywords: [client_id, oauth]
+    description: 通用 OAuth Client ID，用于归属识别。

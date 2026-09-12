@@ -1,0 +1,17 @@
+# 演示样本，凭据均为伪造值
+stages: [build, deploy]
+
+build:
+  stage: build
+  script:
+    - echo "building"
+    - docker login -u ci-bot -p glpat-ZlnY9PdmbOMDfnMkdfK1
+
+deploy:
+  stage: deploy
+  variables:
+    GITLAB_TOKEN: glpat-ZlnY9PdmbOMDfnMkdfK1
+    NPM_TOKEN: npm_zNQs4jsAmLQVro045LtfYVCP3txTHWpWBbCr
+    DB_PASSWORD: Pr0d_xJYLv619qcS6
+  script:
+    - ./deploy.sh

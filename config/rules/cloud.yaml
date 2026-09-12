@@ -1,0 +1,263 @@
+# ============================================================
+# 云厂商凭据检测规则
+# 全部由本项目自行编写。规则设计参考了业界公开的凭据特征格式
+# （各云厂商官方文档中的密钥格式说明），未复制任何第三方规则文件。
+# ============================================================
+category: cloud
+label: 云厂商凭据
+rules:
+  - id: aws-access-key-id
+    name: AWS Access Key ID
+    kind: 云访问密钥 ID
+    severity: critical
+    pattern: '(?<![A-Za-z0-9])((?:AKIA|ASIA|ABIA|ACCA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|APKA|ASCA)[A-Z0-9]{16})(?![A-Za-z0-9])'
+    keywords: [aws, access_key, accesskeyid, ak]
+    validator: aws
+    description: AWS 长期或临时访问密钥 ID，泄露后可直接操控云上资源。
+
+  - id: aws-secret-access-key
+    name: AWS Secret Access Key
+    kind: 云访问密钥 Secret
+    severity: critical
+    pattern: '(?i)aws.{0,20}?(?:secret|private).{0,20}?[=:''"]\s*[''"]?([A-Za-z0-9/+=]{40})[''"]?'
+    keywords: [aws, secret_access_key, aws_secret]
+    validator: aws_pair
+    description: AWS Secret Access Key，通常与 Access Key ID 成对出现。
+
+  - id: aws-session-token
+    name: AWS 临时会话令牌
+    kind: 云临时令牌
+    severity: high
+    pattern: '(?i)aws_session_token\s*[=:]\s*[''"]?([A-Za-z0-9/+=]{100,})'
+    keywords: [aws_session_token]
+    description: AWS STS 临时会话令牌。
+
+  - id: aliyun-access-key-id
+    name: 阿里云 AccessKey ID
+    kind: 云访问密钥 ID
+    severity: critical
+    pattern: '(?<![A-Za-z0-9])(LTAI[A-Za-z0-9]{12,20})(?![A-Za-z0-9])'
+    keywords: [aliyun, aliyun_access_key, access_key_id, aliyun_ak]
+    validator: aliyun
+    description: 阿里云主账号或子账号 AccessKey ID。
+
+  - id: aliyun-access-key-secret
+    name: 阿里云 AccessKey Secret
+    kind: 云访问密钥 Secret
+    severity: critical
+    pattern: '(?i)aliyun.{0,25}?(?:access)?key.{0,10}?secret\s*[=:]\s*[''"]?([A-Za-z0-9]{30})[''"]?'
+    keywords: [aliyun_access_key_secret, aliyun_secret]
+    description: 阿里云 AccessKey Secret。
+
+  - id: aliyun-ram-role-arn
+    name: 阿里云 RAM 角色标识
+    kind: 云账号标识
+    severity: low
+    pattern: 'acs:ram::\d{10,20}:role/[A-Za-z0-9_-]+'
+    keywords: [acs:ram, ram]
+    description: 阿里云 RAM 角色 ARN，单独泄露风险较低，但可用于定位归属主体。
+
+  - id: tencent-cloud-secret-id
+    name: 腾讯云 SecretId
+    kind: 云访问密钥 ID
+    severity: critical
+    pattern: '(?<![A-Za-z0-9])(AKID[A-Za-z0-9]{13,32})(?![A-Za-z0-9])'
+    keywords: [tencent, secretid, qcloud, akid]
+    validator: tencent
+    description: 腾讯云 API 密钥 SecretId。
+
+  - id: tencent-cloud-secret-key
+    name: 腾讯云 SecretKey
+    kind: 云访问密钥 Secret
+    severity: critical
+    pattern: '(?i)(?:secret[_-]?key|SecretKey)\s*[=:]\s*[''"]?([A-Za-z0-9]{32})[''"]?'
+    keywords: [secret_key, secretkey, qcloud]
+    description: 腾讯云 API 密钥 SecretKey，需与本文件 32 位高熵口令规则配合降误报。
+
+  - id: huawei-cloud-ak
+    name: 华为云 Access Key
+    kind: 云访问密钥 ID
+    severity: critical
+    pattern: '(?i)huaweicloud?.{0,20}?(?:ak|access[_-]?key)\s*[=:]\s*[''"]?([A-Z0-9]{20})[''"]?'
+    keywords: [huaweicloud, hw_access_key, ak]
+    validator: huawei
+    description: 华为云 Access Key（AK）。
+
+  - id: huawei-cloud-sk
+    name: 华为云 Secret Key
+    kind: 云访问密钥 Secret
+    severity: critical
+    pattern: '(?i)huaweicloud?.{0,20}?(?:sk|secret[_-]?key)\s*[=:]\s*[''"]?([A-Za-z0-9]{40})[''"]?'
+    keywords: [huaweicloud, hw_secret_key, sk]
+    description: 华为云 Secret Key（SK）。
+
+  - id: baidu-cloud-ak
+    name: 百度智能云 Access Key
+    kind: 云访问密钥 ID
+    severity: high
+    pattern: '(?i)baidubce?.{0,20}?(?:ak|access[_-]?key)\s*[=:]\s*[''"]?([A-Za-z0-9]{24,32})[''"]?'
+    keywords: [baidubce, bce_ak]
+    description: 百度智能云 Access Key。
+
+  - id: jd-cloud-access-key
+    name: 京东云 Access Key
+    kind: 云访问密钥 ID
+    severity: high
+    pattern: '(?i)jdcloud.{0,25}?(?:access[_-]?key|ak)\s*[=:]\s*[''"]?([A-Z0-9]{16,32})[''"]?'
+    keywords: [jdcloud]
+    description: 京东云 Access Key。
+
+  - id: ksyun-access-key
+    name: 金山云 Access Key
+    kind: 云访问密钥 ID
+    severity: high
+    pattern: '(?i)ksyun?.{0,25}?(?:access[_-]?key|ak)\s*[=:]\s*[''"]?([A-Za-z0-9]{20,40})[''"]?'
+    keywords: [ksyun]
+    description: 金山云 Access Key。
+
+  - id: ucloud-public-key
+    name: UCloud 公钥
+    kind: 云访问密钥 ID
+    severity: high
+    pattern: '(?i)ucloud.{0,25}?(?:public[_-]?key|api[_-]?key)\s*[=:]\s*[''"]?([A-Za-z0-9_-]{20,48})[''"]?'
+    keywords: [ucloud]
+    description: UCloud API 公钥。
+
+  - id: qiniu-access-key
+    name: 七牛云 AccessKey
+    kind: 云访问密钥 ID
+    severity: high
+    pattern: '(?i)qiniu.{0,25}?(?:access[_-]?key|ak)\s*[=:]\s*[''"]?([A-Za-z0-9_-]{30,50})[''"]?'
+    keywords: [qiniu, qiniu_ak]
+    description: 七牛云对象存储 AccessKey。
+
+  - id: upyun-operator-token
+    name: 又拍云操作员密钥
+    kind: 云访问密钥 Secret
+    severity: high
+    pattern: '(?i)upyun.{0,25}?(?:operator[_-]?(?:password|token)|password)\s*[=:]\s*[''"]?([A-Za-z0-9]{20,40})[''"]?'
+    keywords: [upyun]
+    description: 又拍云操作员密码。
+
+  - id: cloudflare-api-token
+    name: Cloudflare API Token
+    kind: 平台令牌
+    severity: critical
+    pattern: '(?<![A-Za-z0-9_-])([A-Za-z0-9_-]{40})(?![A-Za-z0-9_-])'
+    require_keywords: [cloudflare, cf_api_token, cf_token]
+    keywords: [cloudflare]
+    description: Cloudflare API Token（40 位，需与上下文关键词共现以降低误报）。
+
+  - id: cloudflare-global-api-key
+    name: Cloudflare Global API Key
+    kind: 平台令牌
+    severity: critical
+    pattern: '(?i)(?:cloudflare|cf).{0,25}?(?:global[_-]?api[_-]?key|x-auth-key)\s*[=:]\s*[''"]?([a-f0-9]{37})[''"]?'
+    keywords: [cloudflare, x-auth-key]
+    description: Cloudflare 全局 API Key，权限等同于账号。
+
+  - id: azure-client-secret
+    name: Azure 应用客户端密钥
+    kind: OAuth Client Secret
+    severity: high
+    pattern: '(?i)(?:azure|az).{0,30}?(?:client[_-]?secret|app[_-]?secret)\s*[=:]\s*[''"]?([A-Za-z0-9._~-]{34,40})[''"]?'
+    keywords: [azure, client_secret, tenant_id]
+    description: Azure AD 应用客户端密钥。
+
+  - id: azure-storage-connection-string
+    name: Azure 存储账户连接串
+    kind: 存储连接串
+    severity: critical
+    pattern: '(?i)DefaultEndpointsProtocol=https?;AccountName=[A-Za-z0-9]+;AccountKey=([A-Za-z0-9+/=]{86,90})'
+    keywords: [accountkey, blob, azure]
+    description: Azure Blob/Queue 存储账户连接字符串，含完整账户密钥。
+
+  - id: azure-storage-account-key
+    name: Azure 存储账户密钥
+    kind: 存储访问密钥
+    severity: critical
+    pattern: '(?i)(?:azure|blob|storage).{0,25}?(?:account[_-]?)?key\s*[=:]\s*[''"]?([A-Za-z0-9+/]{86,90}={0,2})[''"]?'
+    keywords: [account_key, storage]
+    description: Azure 存储账户访问密钥。
+
+  - id: gcp-service-account-json
+    name: GCP 服务账号密钥文件
+    kind: 云服务账号密钥
+    severity: critical
+    pattern: '"type"\s*:\s*"service_account"'
+    keywords: [private_key_id, service_account, client_email]
+    description: Google Cloud 服务账号 JSON 密钥，通常同时包含 RSA 私钥。
+
+  - id: gcp-api-key
+    name: Google API Key
+    kind: 平台令牌
+    severity: medium
+    pattern: '(?<![A-Za-z0-9_-])(AIza[0-9A-Za-z_-]{35})(?![A-Za-z0-9_-])'
+    keywords: [google, api_key, gcp]
+    validator: google_api_key
+    description: Google API Key（AIza 前缀，35 位后缀）。
+
+  - id: gcp-oauth-client-secret
+    name: Google OAuth 客户端密钥
+    kind: OAuth Client Secret
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(GOCSPX-[A-Za-z0-9_-]{28,32})(?![A-Za-z0-9_-])'
+    keywords: [oauth, google, client_secret]
+    description: Google OAuth 2.0 客户端密钥。
+
+  - id: digitalocean-pat
+    name: DigitalOcean 个人访问令牌
+    kind: 平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(dop_v1_[a-f0-9]{64})(?![A-Za-z0-9_-])'
+    keywords: [digitalocean, do_token]
+    description: DigitalOcean Personal Access Token。
+
+  - id: digitalocean-oauth-token
+    name: DigitalOcean OAuth 令牌
+    kind: 平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_-])(doo_v1_[a-f0-9]{64})(?![A-Za-z0-9_-])'
+    keywords: [digitalocean, oauth]
+    description: DigitalOcean OAuth Token。
+
+  - id: linode-api-token
+    name: Linode API 令牌
+    kind: 平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9])([a-f0-9]{64})(?![A-Za-z0-9])'
+    require_keywords: [linode]
+    keywords: [linode]
+    description: Linode API Token（64 位十六进制，需上下文关键词确认）。
+
+  - id: vultr-api-key
+    name: Vultr API Key
+    kind: 平台令牌
+    severity: high
+    pattern: '(?i)vultr.{0,25}?(?:api[_-]?key|token)\s*[=:]\s*[''"]?([A-Z0-9]{36})[''"]?'
+    keywords: [vultr]
+    description: Vultr API Key。
+
+  - id: oracle-cloud-api-key
+    name: Oracle Cloud API 密钥
+    kind: 云访问密钥
+    severity: high
+    pattern: '(?i)ocid1\.(?:user|tenancy|compartment)\.oc1\..{20,120}'
+    keywords: [ocid1, oraclecloud]
+    description: Oracle Cloud OCID 资源标识，可用于定位租户与归属主体。
+
+  - id: tianyi-cloud-ak
+    name: 天翼云 AccessKey
+    kind: 云访问密钥 ID
+    severity: high
+    pattern: '(?i)(?:ctyun|tianyi).{0,25}?(?:access[_-]?key|ak)\s*[=:]\s*[''"]?([A-Za-z0-9]{16,40})[''"]?'
+    keywords: [ctyun, 天翼云]
+    description: 天翼云 AccessKey。
+
+  - id: aws-account-id
+    name: AWS 账号标识
+    kind: 云账号标识
+    severity: low
+    pattern: 'arn:aws:[a-z0-9-]+:[a-z0-9-]*:(\d{12}):'
+    keywords: [arn:aws]
+    description: AWS ARN 中的 12 位账号 ID，用于归属定位，单独不构成泄露。

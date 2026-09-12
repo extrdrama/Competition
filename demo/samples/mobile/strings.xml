@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 演示样本：Android 资源文件中的硬编码密钥 -->
+<resources>
+    <string name="app_name">DemoApp</string>
+    <string name="api_base_url">https://api.internal-demo.example.com/v2/</string>
+    <string name="amap_api_key">ee96fb0a385132f1959a9f7236dabee1</string>
+    <string name="api_key">5viAwjO059DO5BEH2kSgpAvLFJJWG1cl</string>
+    <string name="client_secret">i8Xay5avxJau1im4SleXcUF5cvV67ksRQkNKkQdF</string>
+    <string name="github_token">ghp_UTd3G6o4TR9S152xsQfoGweEtPFR43pOms8l</string>
+</resources>

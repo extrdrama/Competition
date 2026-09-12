@@ -1,0 +1,78 @@
+services:
+  # ------------------------------------------------------------------
+  # 凭迹 CredWatch 主服务
+  #   启动：docker compose up -d
+  #   演示：docker compose run --rm credwatch python -m credwatch demo
+  # ------------------------------------------------------------------
+  credwatch:
+    build: .
+    image: credwatch:1.0.0
+    container_name: credwatch
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # 容器内使用绝对路径，便于与宿主机挂载对应
+      CREDWATCH_DB: /app/data/credwatch.db
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      # 数据库与报告持久化到宿主机，避免容器重建后数据丢失
+      - ./data:/app/data
+      - ./output:/app/output
+      # 只读挂载本地待扫描目录（按需修改为实际路径）
+      - ./demo/samples:/samples:ro
+    # 常驻扫描模式：默认 10 分钟一轮
+    command: ["python", "-m", "credwatch", "watch", "--interval", "600"]
+
+  # ------------------------------------------------------------------
+  # 可视化看板（可选）
+  #   启动：docker compose --profile dashboard up -d
+  #   访问：http://localhost:8501
+  # ------------------------------------------------------------------
+  dashboard:
+    build: .
+    image: credwatch:1.0.0
+    container_name: credwatch-dashboard
+    profiles: ["dashboard"]
+    env_file:
+      - .env
+    environment:
+      CREDWATCH_DB: /app/data/credwatch.db
+    volumes:
+      - ./data:/app/data
+      - ./output:/app/output
+      - ./credwatch:/app/credwatch:ro
+      - ./config:/app/config:ro
+    ports:
+      - "8501:8501"
+    command:
+      - python
+      - -m
+      - streamlit
+      - run
+      - credwatch/dashboard.py
+      - --server.address=0.0.0.0
+      - --server.port=8501
+
+  # ------------------------------------------------------------------
+  # PostgreSQL（可选存储后端，默认使用 SQLite 时无需启动）
+  #   启动：docker compose --profile postgres up -d
+  # ------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: credwatch-postgres
+    profiles: ["postgres"]
+    environment:
+      POSTGRES_USER: credwatch
+      POSTGRES_PASSWORD: change_me_in_production
+      POSTGRES_DB: credwatch
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U credwatch"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

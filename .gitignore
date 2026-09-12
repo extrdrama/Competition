@@ -1,0 +1,44 @@
+# ---- 运行时数据 ----
+data/
+output/
+*.db
+*.db-wal
+*.db-shm
+
+# ---- 环境与密钥（绝不提交） ----
+.env
+.env.local
+.env.*.local
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.mypy_cache/
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
+
+# ---- 编辑器与系统 ----
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# ---- 演示语料的归档产物 ----
+# 归档由 scripts/make_demo_samples.py 生成，可用 make samples 复现
+demo/samples/artifacts/*.apk
+demo/samples/artifacts/*.wxapkg
+demo/samples/archive/*.zip

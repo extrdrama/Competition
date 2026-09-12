@@ -124,7 +124,7 @@ a { color:#0b5fff; text-decoration:none; }
 <ul>
 <li>完整可运行代码（含 15 渠道适配器、检测引擎、验证器、去重关联、报告与看板）；</li>
 <li>53 个单元测试全部通过；</li>
-<li>已在真实公开渠道（GitHub 公开 Gist，120 份文档）完成实测验证；</li>
+<li>已在真实公开渠道（GitHub 公开 Gist）完成两轮独立实测（120 份 + 1103 份文档），分别发现 57 与 199 个唯一凭据（critical 27）；</li>
 <li>离线演示语料（凭据全部为程序生成的伪造值，可安全公开）；</li>
 <li>一份可复现的性能基准；</li>
 <li>交付文档：技术说明书、支持的公开渠道列表、支持的凭据类型列表、</li>
@@ -504,7 +504,7 @@ python -m unittest discover -s tests -t .   # 运行测试</code></pre>
 <h2>八、真实渠道实测</h2>
 <blockquote>前述各节基于离线合成语料。本节是<strong>在真实公开渠道上的实测结果</strong>， 也是回答"你们实际发现了多少条"的依据。</blockquote>
 <h3>8.1 测试设置</h3>
-<table><thead><tr><th>项目</th><th>配置</th></tr></thead><tbody><tr><td>渠道</td><td>GitHub 公开 Gist（<code>/gists/public</code>，公开接口、无需令牌）</td></tr><tr><td>样本量</td><td>120 份公开文档</td></tr><tr><td>是否联网</td><td>是（只读取公开内容，不登录、不绕过访问控制）</td></tr><tr><td>数据留存</td><td>仅掩码与 HMAC 指纹，不保留明文</td></tr><tr><td>执行脚本</td><td><code>python scripts/demo_real_scan.py --max-gists 60</code></td></tr></tbody></table>
+<table><thead><tr><th>项目</th><th>配置</th></tr></thead><tbody><tr><td>渠道</td><td>GitHub 公开 Gist（<code>/gists/public</code>，公开接口、无需令牌）</td></tr><tr><td>样本量</td><td>首轮 120 份；第二轮 1103 份（见 8.5，两个独立时间点）</td></tr><tr><td>是否联网</td><td>是（只读取公开内容，不登录、不绕过访问控制）</td></tr><tr><td>数据留存</td><td>仅掩码与 HMAC 指纹，不保留明文</td></tr><tr><td>执行脚本</td><td><code>python scripts/demo_real_scan.py</code>（支持 <code>--max-gists</code> 控制规模）</td></tr></tbody></table>
 <h3>8.2 首次实测：暴露 2 个真实精度缺陷</h3>
 <table><thead><tr><th>缺陷</th><th>表现</th><th>根因</th></tr></thead><tbody><tr><td><strong>熵检测误报</strong></td><td><code>com/xxx_x86</code>（包名）、<code>PATCH_xxx</code>（构建标识）被判 0.83 概率</td><td>熵 + 长度即可过阈值，无需任何佐证</td></tr><tr><td><strong>命中风暴</strong></td><td>单个 Gist 内 707 条同类命中刷屏，报告不可读</td><td>该文件实为批量数据导出，未做频次抑制</td></tr><tr><td><strong>规则过宽</strong></td><td><code>-p /boot/vmlinuz-linux</code>（内核路径）被判为口令</td><td>规则中的裸 <code>-p</code> 匹配到了路径</td></tr></tbody></table>
 <h3>8.3 修复与效果对比</h3>
@@ -514,17 +514,41 @@ python -m unittest discover -s tests -t .   # 运行测试</code></pre>
 <h3>8.4 修复后的真实命中构成</h3>
 <table><thead><tr><th>风险等级</th><th>数量</th><th>代表性命中（已脱敏）</th></tr></thead><tbody><tr><td>critical</td><td>0</td><td>—</td></tr><tr><td>high</td><td>6</td><td><code>448e****faab</code> GitHub 旧版 40 位令牌；<code>sum(****ws),</code> dotenv 凭据变量</td></tr><tr><td>medium</td><td>51</td><td>高熵赋值字符串（来自同一批量导出文件，已被命中风暴抑制合并）</td></tr></tbody></table>
 <p>按规则大类：generic 52、vcs_ci 4、crypto_keys 1。</p>
-<h3>8.5 实测结论</h3>
+<h3>8.5 第二轮：大规模实测（600 个 Gist / 1103 份文档）</h3>
+<blockquote>在首轮 120 份的基础上，为适配器增加了公开列表翻页能力（<code>/gists/public</code> 每页 100 条，按页计 API 请求，内容抓取走 raw 地址不占 API 配额）， 于另一时间点独立执行第二轮，两轮样本基本不重叠。</blockquote>
+<table><thead><tr><th>项目</th><th>数值</th></tr></thead><tbody><tr><td>处理文档</td><td><strong>1103</strong> 份（600 个 Gist，37.5 MB）</td></tr><tr><td>扫描耗时</td><td>5.7 s（约 194 文档/秒，仅统计扫描阶段）</td></tr><tr><td>去重后唯一凭据</td><td><strong>199</strong></td></tr><tr><td>暴露位置总数</td><td>253</td></tr><tr><td>critical</td><td><strong>27</strong>（几乎全部为比特币 WIF 私钥——真实钱包私钥被公开张贴）</td></tr><tr><td>high</td><td>27</td></tr><tr><td>medium</td><td>143</td></tr><tr><td>low</td><td>2</td></tr></tbody></table>
+<p>按凭据大类：通用密钥 140、数字资产密钥 27、代码托管令牌 15、</p>
+<p>配置文件凭据 8、系统口令 2、其余 7。</p>
+<p>两点观察：</p>
 <ol>
-<li>真实公开渠道中<strong>确实存在</strong>可被识别的凭据暴露（GitHub 旧版令牌、dotenv 明文口令）；</li>
+<li><strong>critical 命中含金量高</strong>：数字资产私钥一旦真实泄露即意味着资产可控，</li>
+</ol>
+<p>这类发现的风险等级与处置紧迫性远高于普通口令；每条 critical 均带</p>
+<p>可解释的判定依据（结构化格式命中 + 邻近关键词 + 熵特征）；</p>
+<ol>
+<li><strong>聚合能力得到验证</strong>：同一作者在单个 Gist 中张贴多把私钥的场景，</li>
+</ol>
+<p>被正确聚合为"1 个归属主体、N 个凭据、M 个暴露位置"，</p>
+<p>而不是虚报为数十个独立事件。</p>
+<h3>8.6 实测结论</h3>
+<ol>
+<li>真实公开渠道中<strong>确实存在</strong>大量可被识别的凭据暴露——两轮独立实测</li>
+</ol>
+<p>（120 份 + 1103 份）分别发现 57 与 199 个唯一凭据，其中含可直接</p>
+<p>导致资产损失的 critical 级泄露；</p>
+<ol>
 <li>真实数据是发现精度缺陷的最有效手段——离线合成语料无法暴露这类问题，</li>
 </ol>
-<p>本轮两个精度修复均由真实数据驱动，并已固化为单元测试；</p>
+<p>精度修复均由真实数据驱动，并已固化为单元测试；</p>
 <ol>
-<li>报告中所有凭据均为掩码形式，未留存任何明文。</li>
+<li>报告中所有凭据均为掩码形式，未留存任何明文；</li>
 </ol>
-<h3>8.6 复现方式</h3>
-<pre><code>python scripts/demo_real_scan.py --max-gists 60
+<p>对 critical 级数字资产私钥，仅统计与脱敏展示，不做任何"可用性验证"。</p>
+<h3>8.7 复现方式</h3>
+<pre><code># 首轮规模
+python scripts/demo_real_scan.py --max-gists 60
+# 大规模实测
+python scripts/demo_real_scan.py --max-gists 600 --rate-limit 180 --db data/real_scan_large.db
 python -m credwatch report</code></pre>
 <hr>
 <h2>九、已知问题与限制</h2>
@@ -547,9 +571,10 @@ python -m credwatch report</code></pre>
 <li>端到端验收：误报专项 <strong>0 命中</strong>、组合风险专项全部符合预期；</li>
 <li>性能：139 文档/秒、峰值内存 54 MB，critical/high 召回 99.9%；</li>
 <li>规则库自检 0 错误 0 警告；</li>
-<li><strong>真实渠道实测</strong>：GitHub 公开 Gist 120 份文档，去重后 57 条唯一凭据（high 6）；</li>
+<li><strong>真实渠道实测</strong>：GitHub 公开 Gist 两轮独立实测（120 + 1103 份文档），</li>
 </ul>
-<p>并通过真实数据发现并修复了 2 个精度缺陷（熵检测误报、命中风暴）。</p>
+<p>分别发现 57 与 199 个唯一凭据（第二轮 critical 27）；并通过真实数据</p>
+<p>发现并修复了 2 个精度缺陷（熵检测误报、命中风暴）。</p>
 <p><strong>测试结论：作品达到可演示、可复现、可核查的状态，并已在真实公开渠道上完成验证。</strong></p>
 <h1 id="sec4">4. 创新点说明</h1>
 <h1>凭迹 CredWatch · 创新点说明</h1>

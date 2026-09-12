@@ -183,29 +183,42 @@ class GitHubSource(SourceAdapter):
     # ------------------------------------------------------------------ Gist
 
     def _discover_gists(self, cursor: dict[str, Any]) -> Iterator[RawDoc]:
-        resp = self._api_get("/gists/public", params={"per_page": 100})
-        if resp is None or resp.status_code != 200:
-            return
-        for gist in resp.json() or []:
-            gist_id = gist.get("id")
-            created = self._parse_time(gist.get("created_at"))
-            for name, fileinfo in (gist.get("files") or {}).items():
-                raw_url = fileinfo.get("raw_url")
-                if not raw_url or fileinfo.get("size", 0) > 1_000_000:
-                    continue
-                self.limiter.acquire()
-                content = self.http.get(raw_url)
-                if content is None or content.status_code != 200:
-                    continue
-                yield RawDoc(
-                    source=self.meta.name,
-                    external_id=f"gist:{gist_id}:{name}",
-                    url=gist.get("html_url") or raw_url,
-                    content=content.content,
-                    author=(gist.get("owner") or {}).get("login"),
-                    published_at=created,
-                    metadata={"filename": name, "path_hint": name, "channel": "gist"},
-                )
+        # /gists/public 每页最多 100 条；大规模实测（数百份）必须翻页。
+        # API 请求按页计数（600 个 Gist 仅需约 6 次请求），内容抓取走 raw_url，
+        # 不占 GitHub API 限流配额。
+        seen_gists = 0
+        page = 1
+        while seen_gists < self.max_items:
+            resp = self._api_get(
+                "/gists/public", params={"per_page": 100, "page": page}
+            )
+            if resp is None or resp.status_code != 200:
+                return
+            gists = resp.json() or []
+            if not gists:
+                return  # 已到最后一页
+            for gist in gists:
+                gist_id = gist.get("id")
+                created = self._parse_time(gist.get("created_at"))
+                for name, fileinfo in (gist.get("files") or {}).items():
+                    raw_url = fileinfo.get("raw_url")
+                    if not raw_url or fileinfo.get("size", 0) > 1_000_000:
+                        continue
+                    self.limiter.acquire()
+                    content = self.http.get(raw_url)
+                    if content is None or content.status_code != 200:
+                        continue
+                    yield RawDoc(
+                        source=self.meta.name,
+                        external_id=f"gist:{gist_id}:{name}",
+                        url=gist.get("html_url") or raw_url,
+                        content=content.content,
+                        author=(gist.get("owner") or {}).get("login"),
+                        published_at=created,
+                        metadata={"filename": name, "path_hint": name, "channel": "gist"},
+                    )
+            seen_gists += len(gists)
+            page += 1
 
     # ------------------------------------------------------------- 内容拉取
 

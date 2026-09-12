@@ -31,6 +31,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="真实渠道实测（GitHub 公开 Gist）")
     parser.add_argument("--max-gists", type=int, default=60, help="最多处理的 Gist 数")
     parser.add_argument("--db", default="data/real_scan.db", help="结果数据库路径")
+    parser.add_argument(
+        "--rate-limit",
+        type=int,
+        default=30,
+        help="每分钟请求上限（内容走 raw 地址，可按需放宽）",
+    )
     args = parser.parse_args()
 
     settings = Settings.load()
@@ -47,6 +53,7 @@ def main() -> int:
                 "mode": "search",
                 "include_gist": True,
                 "max_items": args.max_gists,
+                "rate_limit_per_minute": args.rate_limit,
             }
         }
     }

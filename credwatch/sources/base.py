@@ -168,7 +168,13 @@ class SourceAdapter(abc.ABC):
         self.settings = settings
         self.options = options
         self.http = http or HttpClient(user_agent=getattr(settings, "user_agent", "CredWatch/1.0"))
-        self.limiter = RateLimiter(per_minute=self.meta.rate_limit_per_minute)
+        # 限流默认取渠道元信息；允许按渠道实例覆盖
+        # （如大规模实测抓取 raw 内容时可适当放宽，不占 GitHub API 配额）
+        self.limiter = RateLimiter(
+            per_minute=int(
+                options.get("rate_limit_per_minute", self.meta.rate_limit_per_minute)
+            )
+        )
         self._default_interval = options.get("interval_minutes", 60)
 
     # -------------------------------------------------------------- 待实现

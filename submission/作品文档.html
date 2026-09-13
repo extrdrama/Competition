@@ -448,8 +448,8 @@ python -m unittest discover -s tests -t .   # 运行测试</code></pre>
 <hr>
 <h2>二、单元测试</h2>
 <p><strong>执行命令</strong>：<code>python -m unittest discover -s tests -t .</code></p>
-<p><strong>结果</strong>：<strong>60 个用例，全部通过</strong>，累计耗时约 2.3 秒。</p>
-<table><thead><tr><th>测试文件</th><th>覆盖模块</th><th>用例数</th><th>结果</th></tr></thead><tbody><tr><td><code>tests/test_detectors.py</code></td><td>占位符过滤、熵检测、规则引擎、结构化解析、可解释评分、掩码、真实数据加固</td><td>25</td><td>通过</td></tr><tr><td><code>tests/test_pipeline.py</code></td><td>检测流水线、去重聚合、报告脱敏</td><td>9</td><td>通过</td></tr><tr><td><code>tests/test_correlation.py</code></td><td>凭据对关联、origin 归属、规则库自检、规则归纳</td><td>19</td><td>通过</td></tr><tr><td><code>tests/test_context.py</code></td><td>上下文结构化提取（DSN 解析、变量名分类、明文防护）</td><td>7</td><td>通过</td></tr></tbody></table>
+<p><strong>结果</strong>：<strong>65 个用例，全部通过</strong>，累计耗时约 2.3 秒。</p>
+<table><thead><tr><th>测试文件</th><th>覆盖模块</th><th>用例数</th><th>结果</th></tr></thead><tbody><tr><td><code>tests/test_detectors.py</code></td><td>占位符过滤、熵检测、规则引擎、结构化解析、可解释评分、掩码、真实数据加固</td><td>25</td><td>通过</td></tr><tr><td><code>tests/test_pipeline.py</code></td><td>检测流水线、去重聚合、报告脱敏</td><td>9</td><td>通过</td></tr><tr><td><code>tests/test_correlation.py</code></td><td>凭据对关联、origin 归属、规则库自检、规则归纳</td><td>19</td><td>通过</td></tr><tr><td><code>tests/test_context.py</code></td><td>上下文结构化提取（DSN 解析、变量名分类、明文防护）</td><td>7</td><td>通过</td></tr><tr><td><code>tests/test_artifacts.py</code></td><td>App/小程序渠道端到端（APK 解包检出、wxapkg 按格式组包→解包→检出）</td><td>3</td><td>通过</td></tr></tbody></table>
 <h3>重点覆盖的边界场景</h3>
 <table><thead><tr><th>类别</th><th>覆盖点</th><th>为什么要测</th></tr></thead><tbody><tr><td>误报控制</td><td><code>your_key_here</code> / <code>&lt;TOKEN&gt;</code> / <code>${ENV}</code> / 示例 DSN / 单独私钥头</td><td>误报是此类工具最大的失败原因</td></tr><tr><td>取值正确性</td><td>连接串规则取<strong>口令</strong>而非用户名（<code>secret_group</code>）</td><td>取错字段则报错对象且无法验活</td></tr><tr><td>结果可复现</td><td>同一输入重复运行 3 次，规则集完全一致</td><td>竞赛评审会抽查结果一致性</td></tr><tr><td>数据安全</td><td>JSON 报告中不得出现明文凭据；掩码不泄露长度；私钥体不泄露</td><td>平台自身不能成为新的泄露源</td></tr><tr><td>组合风险</td><td>同文件配对 / 跨文件配对 / <strong>不同仓库不误关联</strong> / 单条不误报</td><td>关联分析一旦误报会误导应急响应</td></tr><tr><td>结构化解析</td><td>k8s Secret Base64 解码、INI 段识别、镜像 ENV 残留</td><td>覆盖规则正则无法表达的结构</td></tr></tbody></table>
 <hr>
@@ -573,7 +573,47 @@ python -m credwatch report</code></pre>
 <p>发布的时间差"，属模式属性而非能力上限——这正说明时效性由<strong>调度频率</strong></p>
 <p>决定，而单轮扫描成本仅数分钟，小时级甚至更高频率的持续监控完全可行。</p>
 <hr>
-<h2>九、已知问题与限制</h2>
+<h2>九、渠道实测矩阵与规则全量自测</h2>
+<h3>9.1 渠道实测矩阵（逐渠道真实抓取验证）</h3>
+<blockquote>审计目标：排除"代码在但实际跑不通"的伪支持。执行 <code>python scripts/channel_smoke.py</code>， 每个渠道在当前环境下<strong>真实发起网络请求或文件读取</strong>。</blockquote>
+<table><thead><tr><th>判定</th><th>数量</th><th>渠道</th></tr></thead><tbody><tr><td>✅ 实测通过</td><td>8</td><td>github（事件流）、container_registry、npm_registry、pypi_registry、paste_site、mediawiki（对接 Wikipedia 实测）、telegram、rss_feed、local_dir</td></tr><tr><td>⚙️ 需配置</td><td>8</td><td>gitee / gitlab / weibo / search_engine（需令牌）；confluence / doc_share（需目标实例）；mobile_app / mini_program（需提供 APK/wxapkg 文件，解析逻辑由单元测试覆盖）</td></tr><tr><td>❌ 失败</td><td>0</td><td>—</td></tr></tbody></table>
+<p>审计中发现并修复的问题：</p>
+<ol>
+<li><strong>paste_site 渠道抓取为 0</strong>：ghostbin 目标已失效（404）；pastebin 的</li>
+</ol>
+<p>贴子 ID 提取正则被导航链接淹没。已移除死目标、收紧 ID 提取（8 位精确匹配），</p>
+<p>修复后真实抓取 3 份贴子；</p>
+<ol>
+<li><strong>github 事件流模式抓取为 0</strong>：GitHub 公共事件流的 PushEvent payload</li>
+</ol>
+<p>已不再携带 commits 列表（仅含 head 哈希），代码却在读旧字段。已改为</p>
+<p>用 head 哈希回查 commit 详情，修复后真实抓取 3 份刚推送的文档；</p>
+<ol>
+<li><strong>telegram 消息对齐缺陷（逻辑审查发现）</strong>：原实现把全文的</li>
+</ol>
+<p>消息 ID/时间/文本三个列表按下标拉齐，纯媒体消息（无文本）会使后续</p>
+<p>所有消息错位。已改为按 data-post 位置分段、在消息块内解析，</p>
+<p>并补齐 mobile_app/mini_program 的端到端测试（构造最小 APK 与</p>
+<p>按格式组包的 wxapkg，验证解包→检出全链路）。</p>
+<h3>9.2 规则全量自测（195 条，自动生成正样本）</h3>
+<blockquote>执行 <code>python scripts/rule_selftest.py</code>：用 exrex 从每条规则的模式 自动生成匹配样本（连接串/多行清单类规则使用手工逼真正样本），先做 正则级往返验证，再走完整检测管线断言引擎级命中。</blockquote>
+<table><thead><tr><th>层级</th><th>数量</th></tr></thead><tbody><tr><td>正则级往返通过</td><td>195 / 195</td></tr><tr><td>引擎级命中</td><td>191 / 195</td></tr><tr><td>被更具体规则遮蔽（检测仍成立，仅标签归属不同）</td><td>4</td></tr></tbody></table>
+<p>审计中发现并修复的问题：</p>
+<ol>
+<li><strong>sk- 家族标签互抢</strong>：Anthropic（sk-ant-）/ DeepSeek（sk-32hex）/</li>
+</ol>
+<p>Moonshot（sk-48alnum）密钥会被更宽的 OpenAI 规则盖掉，标签降级。</p>
+<p>为 openai 规则增加负向断言（排除 or-/ant-/32hex/48alnum），</p>
+<p>并实现"模式头部字面前缀长度"作为同跨度竞争的平局决胜——</p>
+<p>平台专有前缀更长（如 sk-ant- 7 位 &gt; sk- 3 位）的规则胜出；</p>
+<ol>
+<li><strong>Stripe 密钥类型互抢</strong>：stripe-secret 的 (?:sk|rk)_ 交错使</li>
+</ol>
+<p>restricted 密钥被标为 secret。已将两规则职责拆分。</p>
+<p>剩余 4 条遮蔽均为同族歧义（deepseek/dashscope 模式相同、</p>
+<p>proxy 与 basic-auth 同为 URL 凭据等），泄漏本身全部被检出。</p>
+<hr>
+<h2>十、已知问题与限制</h2>
 <p>诚实列出，避免评审误判：</p>
 <ol>
 <li><strong><code>doc_share</code> / <code>search_engine</code> 渠道</strong>依赖第三方搜索接口稳定性，默认关闭、端点可配置；</li>

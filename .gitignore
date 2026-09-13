@@ -43,3 +43,5 @@ demo/samples/artifacts/*.apk
 demo/samples/artifacts/*.wxapkg
 demo/samples/archive/*.zip
 make_demo_samples.py
+
+tests/_fixture_*

@@ -100,28 +100,40 @@ class TelegramPublicSource(SourceAdapter):
 
     @staticmethod
     def _parse_page(page_html: str, channel: str) -> list[tuple[int, datetime, str]]:
-        """解析预览页，返回 [(消息ID, 发布时间, 文本)]，按 ID 升序。"""
-        post_ids = [int(p.rsplit("/", 1)[1]) for p in POST_ATTR_RE.findall(page_html)]
-        times = TIME_RE.findall(page_html)
-        texts = MESSAGE_RE.findall(page_html)
-        # 三组元素按出现顺序一一对应（同一消息块内顺序一致）
+        """解析预览页，返回 [(消息ID, 发布时间, 文本)]，按 ID 升序。
+
+        按 data-post 出现位置把页面切成消息块，**在块内**匹配时间与文本——
+        不能把全文的 post/time/text 三个列表按下标拉齐：
+        纯媒体消息没有文本 div，会让后续所有消息错位（逻辑审查发现）。
+        """
+        marks = [
+            (m.start(), int(m.group(1).rsplit("/", 1)[1]))
+            for m in POST_ATTR_RE.finditer(page_html)
+        ]
         out: list[tuple[int, datetime, str]] = []
         seen: set[int] = set()
-        for idx, msg_id in enumerate(post_ids):
+        for idx, (pos, msg_id) in enumerate(marks):
             if msg_id in seen:
                 continue
             seen.add(msg_id)
-            text = texts[idx] if idx < len(texts) else ""
-            text = html_mod.unescape(TAG_RE.sub("", text)).strip()
-            if not text or len(text) < 8:
-                continue
-            text = WHITESPACE_RE.sub("\n\n", text)[:100_000]
+            seg_end = marks[idx + 1][0] if idx + 1 < len(marks) else len(page_html)
+            segment = page_html[pos:seg_end]
+
             published = datetime.now(timezone.utc)
-            if idx < len(times):
+            tm = TIME_RE.search(segment)
+            if tm:
                 try:
-                    published = datetime.fromisoformat(times[idx].replace("Z", "+00:00"))
+                    published = datetime.fromisoformat(tm.group(1).replace("Z", "+00:00"))
                 except ValueError:
                     pass
+
+            text_m = MESSAGE_RE.search(segment)
+            if not text_m:
+                continue  # 纯媒体消息：无文本可扫
+            text = html_mod.unescape(TAG_RE.sub("", text_m.group(1))).strip()
+            if len(text) < 8:
+                continue
+            text = WHITESPACE_RE.sub("\n\n", text)[:100_000]
             out.append((msg_id, published, f"{text}\n"))
         out.sort(key=lambda x: x[0])
         return out

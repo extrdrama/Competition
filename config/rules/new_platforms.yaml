@@ -141,7 +141,7 @@ rules:
     name: 微信小程序 AppSecret
     kind: 小程序凭据
     severity: critical
-    pattern: "(?i)(?:wx)?app_?secret[\"']?\\s*[:=]\\s*[\"']?([a-f0-9]{32})(?![a-f0-9])"
+    pattern: "(?i)(?:wx)?(?:app_?)?secret[\"']?\\s*[:=]\\s*[\"']?([a-f0-9]{32})(?![a-f0-9])"
     require_keywords: [wx, wechat, weixin, 微信, 小程序]
     secret_group: 1
     description: 微信小程序 AppSecret，配合 AppID 可获取用户数据与接口调用凭据。

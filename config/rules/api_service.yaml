@@ -9,7 +9,7 @@ rules:
     name: OpenAI API Key
     kind: 大模型平台令牌
     severity: high
-    pattern: '(?<![A-Za-z0-9_-])(sk-(?!or-)(?:proj-|svcacct-|admin-)?[A-Za-z0-9_-]{20,})'
+    pattern: '(?<![A-Za-z0-9_-])(sk-(?!or-|ant-|[a-f0-9]{32}(?![A-Za-z0-9_-])|[A-Za-z0-9]{48}(?![A-Za-z0-9_-]))(?:proj-|svcacct-|admin-)?[A-Za-z0-9_-]{20,})'
     keywords: [openai, api_key]
     validator: openai
     description: OpenAI API Key，泄露后可消耗额度并访问账号数据。
@@ -85,7 +85,7 @@ rules:
     name: Stripe 密钥（secret）
     kind: 支付密钥
     severity: critical
-    pattern: '(?<![A-Za-z0-9_-])((?:sk|rk)_(?:live|test)_[A-Za-z0-9]{24,})(?![A-Za-z0-9])'
+    pattern: '(?<![A-Za-z0-9_-])(sk_(?:live|test)_[A-Za-z0-9]{24,})(?![A-Za-z0-9])'
     keywords: [stripe, sk_live, sk_test]
     validator: stripe
     description: Stripe 密钥，live 前缀可发起真实交易操作。

@@ -96,6 +96,70 @@ def rule_specificity(rule_id: str, require_keywords: list[str] | None = None) ->
     return SPECIFICITY_NORMAL
 
 
+def _iter_tokens(sequence):
+    """递归展开 sre_parse 的子模式/分支/重复，产出 (op, av) 序列。"""
+    from re import _parser as sre_parser
+
+    for op, av in sequence:
+        yield op, av
+        try:
+            if op is sre_parser.SUBPATTERN:
+                yield from _iter_tokens(av[-1])
+            elif op is sre_parser.BRANCH:
+                for branch in av[1]:
+                    yield from _iter_tokens(branch)
+            elif op in (sre_parser.MAX_REPEAT, sre_parser.MIN_REPEAT):
+                yield from _iter_tokens([av[2]])
+        except Exception:  # noqa: BLE001 - 结构变体直接跳过
+            continue
+
+
+def longest_literal_run(pattern: str) -> int:
+    """模式**头部**的最长字面前缀（特异性平局决胜）。
+
+    例如 anthropic 的 `sk-ant-`（7）> openai 的 `sk-`（3）：
+    同一跨度同时命中多条规则时，平台专有前缀更长的规则胜出，
+    避免"Anthropic 密钥被标成 OpenAI 密钥"的标签降级。
+
+    只统计从模式开头起的连续字面量（遇到字符类/量词/断言即停），
+    分组透传、分支取第一个选项——这正是"平台专有前缀"的语义。
+    """
+    from re import _parser as sre_parser
+
+    def head(seq) -> int:
+        run = 0
+        for op, av in seq:
+            if op is sre_parser.LITERAL:
+                run += 1
+            elif op is sre_parser.SUBPATTERN:
+                sub = head(av[-1])
+                if sub == 0:
+                    break  # 组头部不是字面量 → 前缀到此为止
+                run += sub
+            elif op is sre_parser.BRANCH:
+                # 取第一个分支的头部（典型平台前缀写法）
+                run += head(av[1][0])
+                break
+            elif op in (sre_parser.MAX_REPEAT, sre_parser.MIN_REPEAT):
+                sub = head(av[2])
+                if sub == 0:
+                    break
+                run += sub
+                if not av[0]:
+                    continue  # 可选组（如 jdbc: 前缀）：计入并继续
+                break
+            elif op in (sre_parser.AT, sre_parser.ASSERT, sre_parser.ASSERT_NOT):
+                continue  # 断言/锚点零宽，不打断字面前缀
+            else:
+                break  # 字符类/量词等：前缀结束
+        return run
+
+    try:
+        return head(sre_parser.parse(pattern, 0))
+    except Exception:  # noqa: BLE001 - 解析失败时退回 0，不影响排序
+        return 0
+
+
 # 整个命中串本身即为"文档示例"的特征。
 # 与 PLACEHOLDER_PATTERNS 的区别：后者只检查捕获组，
 # 这里检查整段匹配——因为 DSN 类规则的"示例特征"往往出现在
@@ -164,6 +228,8 @@ class Rule:
     # 连接串类规则里 group(1) 常是用户名，必须用 secret_group 指到口令上，
     # 否则会把用户名当成凭据上报（既错又无法验活）。
     secret_group: int | None = None
+    # 最长字面前缀长度：同跨度多规则竞争时的平局决胜（见 longest_literal_run）
+    prefix_score: int = 0
     _compiled: re.Pattern[str] | None = field(default=None, repr=False, compare=False)
 
     @property
@@ -252,6 +318,7 @@ class RuleEngine:
                         entropy_threshold=float(item.get("entropy_threshold", 0.0) or 0.0),
                         multiline=bool(item.get("multiline", False)),
                         secret_group=item.get("secret_group"),
+                        prefix_score=longest_literal_run(str(item["pattern"])),
                     )
                 )
             except KeyError as exc:  # 规则文件写错时给出明确位置
@@ -313,7 +380,8 @@ class RuleEngine:
                         validator=rule.validator,
                         description=rule.description,
                         rule_index=len(out),
-                        rule_specificity=rule_specificity(rule.id, rule.require_keywords),
+                        rule_specificity=rule_specificity(rule.id, rule.require_keywords)
+                        + min(rule.prefix_score, 24),
                         metadata={
                             "rule_entropy": rule.entropy,
                             "rule_entropy_threshold": rule.entropy_threshold,

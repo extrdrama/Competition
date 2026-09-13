@@ -1,6 +1,6 @@
 """Paste 类公开分享渠道。
 
-Pastebin / Ghostbin / Hastebin 这类"一次性贴代码"服务是凭据泄露重灾区：
+Pastebin 这类"一次性贴代码"服务是凭据泄露重灾区：
 开发者调试时把配置贴上去，以为链接不公开就安全，实际会被爬虫收录。
 
 合规说明：本适配器只访问各站点**公开列表页与公开 Raw 页**，
@@ -19,24 +19,19 @@ from .base import SourceAdapter, SourceMeta, registry
 
 logger = logging.getLogger("credwatch.sources.paste")
 
-PASTE_ID_RE = re.compile(r'href="/?([A-Za-z0-9]{6,12})"')
-RAW_VIEW_RE = re.compile(r'(?:href|action)="(https?://[^"]*?/raw/[^"]*)"')
+PASTE_ID_RE = re.compile(r'href="/?(?:archive/)?([A-Za-z0-9]{6,12})["#?/>]')
 
-PASTE_SITES: dict[str, dict[str, str]] = {
+PASTE_SITES: dict[str, dict[str, Any]] = {
     "pastebin": {
         "archive": "https://pastebin.com/archive",
         "raw": "https://pastebin.com/raw/{id}",
         "label": "Pastebin",
-    },
-    "ghostbin": {
-        "archive": "https://ghostbin.co/paste/recent",
-        "raw": "https://ghostbin.co/paste/{id}/raw",
-        "label": "Ghostbin",
-    },
-    "hastebin": {
-        "archive": "https://hastebin.com/documents?limit=100",
-        "raw": "https://hastebin.com/raw/{id}",
-        "label": "Hastebin",
+        # pastebin 公开贴 ID 恰为 8 位字母数字；导航链接（signup/archive 等）
+        # 长度或构成不同，据此过滤——曾因导航链接淹没真 ID 导致整渠道抓取为 0
+        "id_len": (8, 8),
+        "junk": {"archive", "languages", "signup", "login", "faq", "api",
+                 "tools", "privacy", "dmca", "contact", "themes", "assets",
+                 "scopes", "domains"},
     },
 }
 
@@ -49,8 +44,8 @@ class PasteSiteSource(SourceAdapter):
         name="paste_site",
         label="公开 Paste 分享站点",
         category="公开分享与代码片段",
-        description="扫描 Pastebin、Ghostbin、Hastebin 等公开 Paste 服务的"
-        "最新公开列表，检测其中的凭据泄露。仅访问公开页面。",
+        description="扫描 Pastebin 等公开 Paste 服务的最新公开列表，"
+        "检测其中的凭据泄露。仅访问公开页面。",
         requires_token=False,
         rate_limit_per_minute=12,
         homepage="https://pastebin.com",
@@ -58,7 +53,7 @@ class PasteSiteSource(SourceAdapter):
 
     def __init__(self, settings: Any, **options: Any) -> None:
         super().__init__(settings, **options)
-        self.sites = options.get("sites") or ["pastebin", "ghostbin", "hastebin"]
+        self.sites = options.get("sites") or ["pastebin"]
         self.max_items = int(options.get("max_items", 120))
         self.recent_hours = int(options.get("recent_hours", 24))
 

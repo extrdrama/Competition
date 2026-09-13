@@ -157,8 +157,14 @@ class GitHubSource(SourceAdapter):
             repo = (event.get("repo") or {}).get("name")
             if not repo:
                 continue
-            for commit in (event.get("payload") or {}).get("commits") or []:
-                sha = commit.get("sha")
+            payload = event.get("payload") or {}
+            # GitHub 公共事件流的 PushEvent payload 已不再携带 commits 列表
+            # （仅含 push_id/size/head 等），需用 head 哈希回查 commit 详情；
+            # 兼容旧格式：payload 里若仍有 commits 则优先使用。
+            shas = [c.get("sha") for c in payload.get("commits") or [] if c.get("sha")]
+            if not shas and payload.get("head"):
+                shas = [payload["head"]]
+            for sha in shas:
                 if not sha or sha in seen_commits:
                     continue
                 seen_commits.add(sha)

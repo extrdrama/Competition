@@ -1,0 +1,55 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#F59E0B', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>红线：这道题只允许"防守"，不允许"进攻"</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 20 }}>
+    <Box style={{ height: 130, background: '#FFF7ED', borderRadius: 12, padding: '18px 28px', justifyContent: 'center', border: '1px solid #FED7AA' }}>
+      <Text style={{ fontSize: 21, color: '#334155', lineHeight: 1.6 }}>
+        官方规则：<Text style={{ fontWeight: 'bold', color: '#F59E0B' }}>只接受防御性作品，不接受任何攻击性质的内容。</Text>
+        换句话说——你是"抄表员"，不是"小偷"。发现别人家钥匙掉在路上，你的职责是还回去，不是开门进去。
+      </Text>
+    </Box>
+    <Box style={{ flexDirection: 'row', gap: 18, height: 230 }}>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <FAIcon name='eye' style={{ fill: '#3B82F6', width: 28, height: 28 }} />
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#0F172A' }}>只看公开的</Text>
+        </Box>
+        <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.6, marginTop: 10 }}>
+          只读取无需登录就能访问的公开内容；不登录、不绕过鉴权、不越权访问任何私有数据。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <FAIcon name='ban' style={{ fill: '#3B82F6', width: 28, height: 28 }} />
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#0F172A' }}>不用别人的钥匙</Text>
+        </Box>
+        <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.6, marginTop: 10 }}>
+          拿到泄露凭据只能做"只读验证"（确认它是否有效），绝不利用它操作资源、绝不暴力尝试。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <FAIcon name='envelope' style={{ fill: '#3B82F6', width: 28, height: 28 }} />
+          <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#0F172A' }}>负责任披露</Text>
+        </Box>
+        <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.6, marginTop: 10 }}>
+          发现泄露要通知责任主体去修，报告里只放掩码和指纹，明文不落盘、不传播。
+        </Text>
+      </Box>
+    </Box>
+    <Box style={{ height: 120, flexDirection: 'row', alignItems: 'center', gap: 18, background: '#0F172A', borderRadius: 12, padding: '0 28px' }}>
+      <FAIcon name='balance-scale' style={{ fill: '#F59E0B', width: 36, height: 36 }} />
+      <Text style={{ fontSize: 19, color: '#E2E8F0', lineHeight: 1.6 }}>
+        这不只是道德要求，也是<Text style={{ fontWeight: 'bold', color: '#F59E0B' }}>法律要求</Text>：
+        存储或使用他人凭据可能触犯《刑法》第二百八十五条（非法获取计算机信息系统数据）。
+        答辩时评委也会查——你的作品自己必须是"干净"的。
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>赛题解读 · 小白版</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>07 / 08</Text>
+  </Box>
+</Slide>

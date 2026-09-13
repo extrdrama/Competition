@@ -1,0 +1,53 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#3B82F6', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>钥匙是怎么漏到街上的？四个真实场景</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 20 }}>
+    <Text style={{ fontSize: 21, color: '#475569', lineHeight: 1.5 }}>
+      没有哪个开发者想泄露凭据——它们几乎全是<Text style={{ fontWeight: 'bold', color: '#3B82F6' }}>"图省事"的副作用</Text>。
+      这四个场景，正好对应赛题要求监测的公开渠道类型：
+    </Text>
+    <Box style={{ flexDirection: 'row', gap: 18, height: 220 }}>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 20, borderTop: '4px solid #3B82F6' }}>
+        <FAIcon name='github' style={{ fill: '#3B82F6', width: 32, height: 32 }} />
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#0F172A', marginTop: 10 }}>代码托管平台</Text>
+        <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.55, marginTop: 8 }}>
+          调试时把密钥硬编码进代码，仓库设成公开就忘了改——GitHub 上每天都能搜到。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 20, borderTop: '4px solid #3B82F6' }}>
+        <FAIcon name='clipboard' style={{ fill: '#3B82F6', width: 32, height: 32 }} />
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#0F172A', marginTop: 10 }}>Paste 分享站</Text>
+        <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.55, marginTop: 8 }}>
+          报错日志、配置文件往 Pastebin 一贴求人帮忙，以为"链接不公开"就安全。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 20, borderTop: '4px solid #06B6D4' }}>
+        <FAIcon name='cube' style={{ fill: '#06B6D4', width: 32, height: 32 }} />
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#0F172A', marginTop: 10 }}>容器镜像层</Text>
+        <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.55, marginTop: 8 }}>
+          Dockerfile 里用 ENV 传过密钥，后来删了——但镜像的"历史层"里永远留着。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 20, borderTop: '4px solid #06B6D4' }}>
+        <FAIcon name='mobile' style={{ fill: '#06B6D4', width: 32, height: 32 }} />
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#0F172A', marginTop: 10 }}>App 与小程序包</Text>
+        <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.55, marginTop: 8 }}>
+          把 AppSecret 打进 APK 或小程序包发给用户——解包工具一打开就看得见。
+        </Text>
+      </Box>
+    </Box>
+    <Box style={{ height: 120, flexDirection: 'row', alignItems: 'center', gap: 18, background: '#FFFBEB', borderRadius: 12, padding: '0 28px', border: '1px solid #FDE68A' }}>
+      <FAIcon name='rss' style={{ fill: '#F59E0B', width: 34, height: 34 }} />
+      <Text style={{ fontSize: 20, color: '#334155', lineHeight: 1.6 }}>
+        共同点：它们都在<Text style={{ fontWeight: 'bold' }}>公开渠道上</Text>。所以赛题的方向就是——
+        <Text style={{ fontWeight: 'bold', color: '#3B82F6' }}>到这些公开渠道上，把漏出去的钥匙"找回来"（在它们被坏人用掉之前）。</Text>
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>赛题解读 · 小白版</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>04 / 08</Text>
+  </Box>
+</Slide>

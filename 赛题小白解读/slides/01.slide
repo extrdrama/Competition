@@ -1,0 +1,22 @@
+<Slide style={{ width: 1280, height: 720, background: '#0F172A', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif", position: 'relative', overflow: 'hidden' }}>
+  <Box style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 8, background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)' }} />
+  <Box style={{ position: 'absolute', top: -60, right: -60, width: 340, height: 340, borderRadius: 200, background: 'rgba(59,130,246,0.12)' }} />
+  <Box style={{ position: 'absolute', bottom: -80, right: 120, width: 260, height: 260, borderRadius: 150, background: 'rgba(6,182,212,0.10)' }} />
+  <Box style={{ height: 200, justifyContent: 'center' }}>
+    <Text style={{ fontSize: 18, color: '#06B6D4', letterSpacing: 6, fontWeight: 'bold' }}>网安比赛 · 揭榜挑战赛 · 题目 3 · 小白入门版</Text>
+  </Box>
+  <Box style={{ gap: 26 }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 24 }}>
+      <FAIcon name='key' style={{ fill: '#F59E0B', width: 64, height: 64 }} />
+      <Text style={{ fontSize: 58, fontWeight: 'bold', color: '#FFFFFF', lineHeight: 1.2 }}>读懂这道赛题</Text>
+    </Box>
+    <Text style={{ fontSize: 36, fontWeight: 'bold', color: '#E2E8F0' }}>云上凭据泄露的自动化检测</Text>
+    <Text style={{ fontSize: 22, color: '#94A3B8', lineHeight: 1.6 }}>
+      在写第一行代码之前，先用 8 页搞清楚：<Text style={{ color: '#F59E0B', fontWeight: 'bold' }}>凭据是什么、为什么泄露可怕、赛题要你造什么、红线在哪</Text>
+    </Text>
+  </Box>
+  <Box style={{ position: 'absolute', bottom: 40, left: 70, right: 70, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>赛题解读 · 小白版</Text>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>01 / 08</Text>
+  </Box>
+</Slide>

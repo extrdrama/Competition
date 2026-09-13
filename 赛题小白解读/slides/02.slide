@@ -1,0 +1,52 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#3B82F6', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>先认识主角：什么是"凭据"？</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 24 }}>
+    <Box style={{ flexDirection: 'row', gap: 24, height: 200 }}>
+      <Box style={{ flex: 1, background: '#EFF6FF', borderRadius: 12, padding: 24, border: '1px solid #DBEAFE' }}>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <FAIcon name='key' style={{ fill: '#3B82F6', width: 28, height: 28 }} />
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0F172A' }}>一句话定义</Text>
+        </Box>
+        <Text style={{ fontSize: 21, color: '#334155', lineHeight: 1.6, marginTop: 14 }}>
+          凭据就是<Text style={{ fontWeight: 'bold', color: '#3B82F6' }}>云上资源的"钥匙"</Text>——人登录系统用账号密码，
+          <Text style={{ fontWeight: 'bold' }}>程序访问云服务用的就是凭据</Text>。谁拿到它，谁就能以"合法身份"操作你的云账号。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#FFFBEB', borderRadius: 12, padding: 24, border: '1px solid #FDE68A' }}>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <FAIcon name='id-badge' style={{ fill: '#F59E0B', width: 28, height: 28 }} />
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0F172A' }}>常见的几把"钥匙"</Text>
+        </Box>
+        <Text style={{ fontSize: 20, color: '#334155', lineHeight: 1.7, marginTop: 14 }}>
+          · 云 AccessKey / SecretKey（阿里云、AWS）{'\n'}
+          · API Token（OpenAI、GitHub 等）{'\n'}
+          · 数据库连接串（含账号密码）{'\n'}
+          · SSH 私钥 / OAuth Client Secret
+        </Text>
+      </Box>
+    </Box>
+    <Box style={{ height: 150, background: '#0F172A', borderRadius: 12, padding: '20px 28px', justifyContent: 'center' }}>
+      <Text style={{ fontSize: 15, color: '#64748B', marginBottom: 10 }}>长什么样？（伪造示例，仅示意格式）</Text>
+      <Text style={{ fontSize: 19, fontFamily: "'JetBrains Mono', Consolas, monospace", color: '#06B6D4' }}>
+        ALIYUN_ACCESS_KEY_ID     = LTAI5tAbCdEfGh123456
+      </Text>
+      <Text style={{ fontSize: 19, fontFamily: "'JetBrains Mono', Consolas, monospace", color: '#F59E0B', marginTop: 6 }}>
+        ALIYUN_ACCESS_KEY_SECRET = MHk3xR9pQ2sT8uVwXyZ0aB1cD4fG6hJ8kL2m
+      </Text>
+    </Box>
+    <Box style={{ height: 130, flexDirection: 'row', alignItems: 'center', gap: 20, background: '#F8FAFC', borderRadius: 12, padding: '0 28px', border: '1px solid #E2E8F0' }}>
+      <FAIcon name='lightbulb' style={{ fill: '#06B6D4', width: 40, height: 40 }} />
+      <Text style={{ fontSize: 21, color: '#334155', lineHeight: 1.6 }}>
+        <Text style={{ fontWeight: 'bold' }}>记忆锚点</Text>：你家的钥匙丢了，小偷不用撬门——开门就行。{'\n'}
+        云凭据泄露也一样：<Text style={{ fontWeight: 'bold', color: '#3B82F6' }}>不需要任何"黑客攻击"，拿着钥匙大大方方走进去。</Text>
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>赛题解读 · 小白版</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>02 / 08</Text>
+  </Box>
+</Slide>

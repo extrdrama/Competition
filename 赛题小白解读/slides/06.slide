@@ -1,0 +1,47 @@
+<Slide style={{ width: 1280, height: 720, background: '#0F172A', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#F59E0B', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#FFFFFF' }}>赛题的四个硬指标（评的就是这四件事）</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 18 }}>
+    <Box style={{ flexDirection: 'row', gap: 16, height: 240 }}>
+      <Box style={{ flex: 1, background: 'rgba(59,130,246,0.10)', borderRadius: 12, padding: 20, border: '1px solid rgba(59,130,246,0.4)' }}>
+        <Text style={{ fontSize: 15, color: '#93C5FD', letterSpacing: 2 }}>渠道多</Text>
+        <Text style={{ fontSize: 66, fontWeight: 'bold', color: '#3B82F6', lineHeight: 1.1, marginTop: 6 }}>多</Text>
+        <Text style={{ fontSize: 17, color: '#CBD5E1', lineHeight: 1.55, marginTop: 8 }}>
+          支持的监控渠道越多越好——代码托管、Paste、镜像、包仓库、App 包……
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: 'rgba(6,182,212,0.10)', borderRadius: 12, padding: 20, border: '1px solid rgba(6,182,212,0.4)' }}>
+        <Text style={{ fontSize: 15, color: '#67E8F9', letterSpacing: 2 }}>类型全</Text>
+        <Text style={{ fontSize: 66, fontWeight: 'bold', color: '#06B6D4', lineHeight: 1.1, marginTop: 6 }}>全</Text>
+        <Text style={{ fontSize: 17, color: '#CBD5E1', lineHeight: 1.55, marginTop: 8 }}>
+          支持的凭据类型越多越好——云 AK、API Token、数据库连接串、SSH 私钥……
+        </Text>
+      </Box>
+    </Box>
+    <Box style={{ flexDirection: 'row', gap: 16, height: 240 }}>
+      <Box style={{ flex: 1, background: 'rgba(245,158,11,0.12)', borderRadius: 12, padding: 20, border: '1px solid rgba(245,158,11,0.5)' }}>
+        <Text style={{ fontSize: 15, color: '#FCD34D', letterSpacing: 2 }}>时效快</Text>
+        <Text style={{ fontSize: 66, fontWeight: 'bold', color: '#F59E0B', lineHeight: 1.1, marginTop: 6 }}>快</Text>
+        <Text style={{ fontSize: 17, color: '#CBD5E1', lineHeight: 1.55, marginTop: 8 }}>
+          反应时间越快越好——赛题点名"发现凭据的时间 vs 公开泄露的时间"，要压到分钟级。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: 'rgba(148,163,184,0.10)', borderRadius: 12, padding: 20, border: '1px solid rgba(148,163,184,0.4)' }}>
+        <Text style={{ fontSize: 15, color: '#CBD5E1', letterSpacing: 2 }}>误报少</Text>
+        <Text style={{ fontSize: 66, fontWeight: 'bold', color: '#E2E8F0', lineHeight: 1.1, marginTop: 6 }}>准</Text>
+        <Text style={{ fontSize: 17, color: '#CBD5E1', lineHeight: 1.55, marginTop: 8 }}>
+          喊"狼来了"喊多了没人信——报出来的要真的是凭据，还要说清"为什么判定为真"。
+        </Text>
+      </Box>
+    </Box>
+    <Box style={{ height: 40, flexDirection: 'row', alignItems: 'center' }}>
+      <Text style={{ fontSize: 17, color: '#94A3B8' }}>除此之外还有两项加分能力：验证凭据是否仍可用（验活）、识别它属于谁（归属识别）。</Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#64748B' }}>赛题解读 · 小白版</Text>
+    <Text style={{ fontSize: 13, color: '#64748B' }}>06 / 08</Text>
+  </Box>
+</Slide>

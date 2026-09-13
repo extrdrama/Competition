@@ -1,0 +1,62 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#3B82F6', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>评分怎么评、交什么：一张图收尾</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 20 }}>
+    <Box style={{ flexDirection: 'row', gap: 24, height: 250 }}>
+      <Box style={{ flex: 1.2, background: '#F8FAFC', borderRadius: 12, padding: 22, border: '1px solid #E2E8F0' }}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0F172A' }}>评审维度（官方公开）</Text>
+        <Box style={{ marginTop: 14, gap: 12 }}>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Box style={{ width: 10, height: 10, borderRadius: 5, background: '#3B82F6' }} />
+            <Text style={{ fontSize: 19, color: '#334155' }}>原创性与创新性 —— 是否独立设计、有独到思路</Text>
+          </Box>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Box style={{ width: 10, height: 10, borderRadius: 5, background: '#3B82F6' }} />
+            <Text style={{ fontSize: 19, color: '#334155' }}>完成程度 —— 要求的功能是否真的做出来了</Text>
+          </Box>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Box style={{ width: 10, height: 10, borderRadius: 5, background: '#3B82F6' }} />
+            <Text style={{ fontSize: 19, color: '#334155' }}>性能 / 时效性 —— 扫得快、发现得早</Text>
+          </Box>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Box style={{ width: 10, height: 10, borderRadius: 5, background: '#3B82F6' }} />
+            <Text style={{ fontSize: 19, color: '#334155' }}>应用价值 + 文档规范性 —— 能落地、材料齐全</Text>
+          </Box>
+        </Box>
+      </Box>
+      <Box style={{ flex: 1, background: '#EFF6FF', borderRadius: 12, padding: 22, border: '1px solid #DBEAFE' }}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0F172A' }}>要交什么</Text>
+        <Box style={{ marginTop: 14, gap: 12 }}>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <FAIcon name='file-pdf' style={{ fill: '#3B82F6', width: 24, height: 24 }} />
+            <Text style={{ fontSize: 19, color: '#334155' }}>作品文档（PDF，≤10M）：简介+设计+测试报告+声明</Text>
+          </Box>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <FAIcon name='cogs' style={{ fill: '#3B82F6', width: 24, height: 24 }} />
+            <Text style={{ fontSize: 19, color: '#334155' }}>可执行程序：完整能跑的检测平台</Text>
+          </Box>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <FAIcon name='signature' style={{ fill: '#3B82F6', width: 24, height: 24 }} />
+            <Text style={{ fontSize: 19, color: '#334155' }}>参赛声明（签名），材料不得含学校/导师信息</Text>
+          </Box>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <FAIcon name='tag' style={{ fill: '#3B82F6', width: 24, height: 24 }} />
+            <Text style={{ fontSize: 19, color: '#334155' }}>命名："队长姓名+作品名称+资料名称"</Text>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+    <Box style={{ height: 150, background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)', borderRadius: 12, padding: '22px 30px', justifyContent: 'center', boxShadow: '0 4px 20px rgba(59,130,246,0.25)' }}>
+      <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#FFFFFF', lineHeight: 1.5 }}>
+        一句话总结这道赛题：{'\n'}
+        <Text style={{ fontSize: 22, color: '#E0F2FE' }}>造一台"雷达"，在坏人用掉那些公开泄露的云钥匙之前，先把它们找出来、报给主人。</Text>
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>赛题解读 · 小白版 · 完</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>08 / 08</Text>
+  </Box>
+</Slide>

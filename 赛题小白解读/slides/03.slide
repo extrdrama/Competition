@@ -1,0 +1,50 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#3B82F6', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>泄露为什么可怕：不用"攻"，门就开了</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 22 }}>
+    <Box style={{ height: 150, background: 'linear-gradient(135deg, #0F172A 0%, #1E3A5F 100%)', borderRadius: 12, padding: '22px 30px', justifyContent: 'center' }}>
+      <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', lineHeight: 1.5 }}>
+        防火墙挡的是"撬门的人"，<Text style={{ color: '#F59E0B' }}>挡不住"拿着钥匙的人"。</Text>
+      </Text>
+      <Text style={{ fontSize: 20, color: '#94A3B8', marginTop: 10 }}>
+        用泄露凭据调用云 API，在日志里看起来就是一次正常的程序访问——传统安全防护几乎全部失效。
+      </Text>
+    </Box>
+    <Box style={{ flexDirection: 'row', gap: 20, height: 210 }}>
+      <Box style={{ flex: 1, background: '#FFF7ED', borderRadius: 12, padding: 22, border: '1px solid #FED7AA' }}>
+        <FAIcon name='coins' style={{ fill: '#F59E0B', width: 34, height: 34 }} />
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0F172A', marginTop: 12 }}>钱包被掏空</Text>
+        <Text style={{ fontSize: 18, color: '#475569', lineHeight: 1.55, marginTop: 8 }}>
+          拿你的云账号开几百台机器挖矿，账单按小时往上跳。真实案例中出现过一夜数十万元的账单。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#FFF7ED', borderRadius: 12, padding: 22, border: '1px solid #FED7AA' }}>
+        <FAIcon name='database' style={{ fill: '#F59E0B', width: 34, height: 34 }} />
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0F172A', marginTop: 12 }}>数据被拖走</Text>
+        <Text style={{ fontSize: 18, color: '#475569', lineHeight: 1.55, marginTop: 8 }}>
+          数据库、对象存储桶里的用户数据被批量下载——泄露的是凭据，丢的是全部业务数据。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#FFF7ED', borderRadius: 12, padding: 22, border: '1px solid #FED7AA' }}>
+        <FAIcon name='trash' style={{ fill: '#F59E0B', width: 34, height: 34 }} />
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0F172A', marginTop: 12 }}>家被拆了</Text>
+        <Text style={{ fontSize: 18, color: '#475569', lineHeight: 1.55, marginTop: 8 }}>
+          删除服务器、清空存储桶、留勒索信——恢复成本极高，且攻击全程"合法操作"。
+        </Text>
+      </Box>
+    </Box>
+    <Box style={{ height: 110, flexDirection: 'row', alignItems: 'center', gap: 18, background: '#F8FAFC', borderRadius: 12, padding: '0 28px', border: '1px solid #E2E8F0' }}>
+      <FAIcon name='clock' style={{ fill: '#3B82F6', width: 36, height: 36 }} />
+      <Text style={{ fontSize: 20, color: '#334155', lineHeight: 1.6 }}>
+        更要命的是<Text style={{ fontWeight: 'bold', color: '#3B82F6' }}>时间差</Text>：行业里凭据从"贴出去"到"被人发现"，
+        往往以天甚至月计——而这道赛题要压缩的核心指标就是它。
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>赛题解读 · 小白版</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>03 / 08</Text>
+  </Box>
+</Slide>

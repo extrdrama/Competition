@@ -1,0 +1,56 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#3B82F6', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>赛题让你造什么：一台持续盯梢的"泄露雷达"</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 20 }}>
+    <Box style={{ height: 130, background: '#EFF6FF', borderRadius: 12, padding: '18px 28px', justifyContent: 'center', border: '1px solid #DBEAFE' }}>
+      <Text style={{ fontSize: 22, color: '#1E3A5F', lineHeight: 1.6 }}>
+        赛题是<Text style={{ fontWeight: 'bold', color: '#3B82F6' }}>防御向</Text>的：造一个自动化平台，
+        <Text style={{ fontWeight: 'bold' }}>持续监测互联网公开渠道</Text>，自动发现其中暴露的云凭据，
+        并告诉责任主体——<Text style={{ fontWeight: 'bold' }}>谁泄露的、密钥还能不能用、该怎么处理。</Text>
+      </Text>
+    </Box>
+    <Box style={{ height: 250, flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+      <Box style={{ width: 300, height: 200, background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0', padding: 18, justifyContent: 'center' }}>
+        <FAIcon name='globe' style={{ fill: '#3B82F6', width: 34, height: 34 }} />
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#0F172A', marginTop: 10 }}>公开渠道</Text>
+        <Text style={{ fontSize: 16, color: '#475569', lineHeight: 1.5, marginTop: 6 }}>
+          代码托管、Paste 站、包仓库、容器镜像、Wiki、App 包……
+        </Text>
+      </Box>
+      <FAIcon name='arrow-right' style={{ fill: '#94A3B8', width: 26, height: 26 }} />
+      <Box style={{ flex: 1, height: 220, background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)', borderRadius: 12, padding: 20, justifyContent: 'center', boxShadow: '0 4px 20px rgba(59,130,246,0.25)' }}>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <FAIcon name='broadcast-tower' style={{ fill: '#FFFFFF', width: 34, height: 34 }} />
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#FFFFFF' }}>你要造的"雷达"平台</Text>
+        </Box>
+        <Text style={{ fontSize: 17, color: '#E0F2FE', lineHeight: 1.6, marginTop: 10 }}>
+          ① 持续扫描这些渠道{'\n'}
+          ② 从海量文本里识别"这串字符是凭据"{'\n'}
+          ③ 判断真假、是否仍可用、属于谁{'\n'}
+          ④ 告警并给出处置建议
+        </Text>
+      </Box>
+      <FAIcon name='arrow-right' style={{ fill: '#94A3B8', width: 26, height: 26 }} />
+      <Box style={{ width: 300, height: 200, background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0', padding: 18, justifyContent: 'center' }}>
+        <FAIcon name='bell' style={{ fill: '#F59E0B', width: 34, height: 34 }} />
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#0F172A', marginTop: 10 }}>责任主体收到告警</Text>
+        <Text style={{ fontSize: 16, color: '#475569', lineHeight: 1.5, marginTop: 6 }}>
+          在坏人用掉钥匙之前吊销它、换锁、堵住根因。
+        </Text>
+      </Box>
+    </Box>
+    <Box style={{ height: 110, flexDirection: 'row', alignItems: 'center', gap: 18, background: '#F8FAFC', borderRadius: 12, padding: '0 28px', border: '1px solid #E2E8F0' }}>
+      <FAIcon name='sitemap' style={{ fill: '#06B6D4', width: 34, height: 34 }} />
+      <Text style={{ fontSize: 20, color: '#334155', lineHeight: 1.6 }}>
+        难点不在"写个爬虫"，而在：<Text style={{ fontWeight: 'bold' }}>① 渠道又多又杂（要可扩展）；② 判断"这串字符是不是凭据"（要少误报）；
+        ③ 发现要快（要时效性）。</Text>——这正是赛题评分的三个核心维度。
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>赛题解读 · 小白版</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>05 / 08</Text>
+  </Box>
+</Slide>

@@ -1,0 +1,53 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#F59E0B', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>合规设计：平台自己绝不能成为新的泄露源</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 18 }}>
+    <Text style={{ fontSize: 20, color: '#475569' }}>
+      这是赛题的硬性要求，也是凭迹从第一行代码就定下的四条铁律：
+    </Text>
+    <Box style={{ flexDirection: 'row', gap: 18, height: 200 }}>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 22, borderTop: '4px solid #3B82F6' }}>
+        <FAIcon name='eye' style={{ fill: '#3B82F6', width: 30, height: 30 }} />
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0F172A', marginTop: 10 }}>只读公开内容</Text>
+        <Text style={{ fontSize: 16, color: '#475569', lineHeight: 1.6, marginTop: 8 }}>
+          只访问无需登录即可访问的公开页面与接口，不登录、不绕过鉴权、不越权、不爆破。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 22, borderTop: '4px solid #3B82F6' }}>
+        <FAIcon name='mask' style={{ fill: '#3B82F6', width: 30, height: 30 }} />
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0F172A', marginTop: 10 }}>掩码 + 指纹落盘</Text>
+        <Text style={{ fontSize: 16, color: '#475569', lineHeight: 1.6, marginTop: 8 }}>
+          数据库与报告里只有掩码（448e****faab）和 HMAC 指纹——凭据明文永不落盘，平台不成为新泄露源。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 22, borderTop: '4px solid #06B6D4' }}>
+        <FAIcon name='check-circle' style={{ fill: '#06B6D4', width: 30, height: 30 }} />
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0F172A', marginTop: 10 }}>只读验活、默认关闭</Text>
+        <Text style={{ fontSize: 16, color: '#475569', lineHeight: 1.6, marginTop: 8 }}>
+          验活只调用平台官方只读身份接口，全局限速、默认关闭——只为确认"钥匙是否还能开门"，绝不开门。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 22, borderTop: '4px solid #06B6D4' }}>
+        <FAIcon name='hands-helping' style={{ fill: '#06B6D4', width: 30, height: 30 }} />
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0F172A', marginTop: 10 }}>负责任披露</Text>
+        <Text style={{ fontSize: 16, color: '#475569', lineHeight: 1.6, marginTop: 8 }}>
+          发现泄露 → 通知责任主体 → 给出修复建议 → 复核。不利用、不囤积、不公开明文。
+        </Text>
+      </Box>
+    </Box>
+    <Box style={{ height: 130, background: '#0F172A', borderRadius: 12, padding: '20px 28px', justifyContent: 'center' }}>
+      <Text style={{ fontSize: 19, color: '#E2E8F0', lineHeight: 1.65 }}>
+        <Text style={{ fontWeight: 'bold', color: '#F59E0B' }}>为什么答辩时这页很重要：</Text>
+        检测类作品的特殊之处在于——你的工具每天在"接触别人的秘密"。
+        评委一定会查：你有没有把真实凭据存下来？有没有拿它做过什么？
+        凭迹的每一份实测报告都经得起这个拷问。
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>凭迹 CredWatch · 项目解读</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>09 / 11</Text>
+  </Box>
+</Slide>

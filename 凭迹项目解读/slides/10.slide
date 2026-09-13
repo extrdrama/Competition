@@ -1,0 +1,62 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#3B82F6', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>跑起来 + 对照赛题：一张表交卷</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 18 }}>
+    <Box style={{ height: 120, background: '#0F172A', borderRadius: 12, padding: '16px 26px', justifyContent: 'center' }}>
+      <Text style={{ fontSize: 15, color: '#64748B', marginBottom: 8 }}>三条命令，现场跑给评委看（无需任何令牌）</Text>
+      <Text style={{ fontSize: 18, fontFamily: "'JetBrains Mono', Consolas, monospace", color: '#7DD3FC', lineHeight: 1.7 }}>
+        python -m credwatch demo      # 真实数据演示：实时扫描公开渠道{'\n'}
+        python -m credwatch bench     # 性能基准（固定种子可复现）{'\n'}
+        python -m credwatch new-source xxx   # 现场演示：一分钟新增一个渠道
+      </Text>
+    </Box>
+    <Box style={{ flexDirection: 'row', gap: 20, height: 260 }}>
+      <Box style={{ flex: 1.25, background: '#F8FAFC', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0F172A' }}>赛题要求 → 我们的答卷</Text>
+        <Box style={{ marginTop: 12, gap: 9 }}>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Text style={{ fontSize: 17, color: '#22C55E', fontWeight: 'bold', width: 34 }}>✓</Text>
+            <Text style={{ fontSize: 16, color: '#334155' }}>渠道越多越好 → 17 个 / 11 类，插件化扩展</Text>
+          </Box>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Text style={{ fontSize: 17, color: '#22C55E', fontWeight: 'bold', width: 34 }}>✓</Text>
+            <Text style={{ fontSize: 16, color: '#334155' }}>类型越多越好 → 195 规则 / 59 种凭据类型</Text>
+          </Box>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Text style={{ fontSize: 17, color: '#22C55E', fontWeight: 'bold', width: 34 }}>✓</Text>
+            <Text style={{ fontSize: 16, color: '#334155' }}>反应越快越好 → 最快 2.4 分钟，持续调度分钟级</Text>
+          </Box>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Text style={{ fontSize: 17, color: '#22C55E', fontWeight: 'bold', width: 34 }}>✓</Text>
+            <Text style={{ fontSize: 16, color: '#334155' }}>发现数量真实 → 三轮实测 57 / 199 / 165，指纹去重可核查</Text>
+          </Box>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Text style={{ fontSize: 17, color: '#22C55E', fontWeight: 'bold', width: 34 }}>✓</Text>
+            <Text style={{ fontSize: 16, color: '#334155' }}>误报控制 + 验活 + 归属 + 处置建议 → 全部落地</Text>
+          </Box>
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Text style={{ fontSize: 17, color: '#22C55E', fontWeight: 'bold', width: 34 }}>✓</Text>
+            <Text style={{ fontSize: 16, color: '#334155' }}>合规防御 + 65 单元测试 + 9 份交付文档</Text>
+          </Box>
+        </Box>
+      </Box>
+      <Box style={{ flex: 1, background: 'linear-gradient(160deg, #EFF6FF 0%, #FFFFFF 100%)', borderRadius: 12, padding: 22, border: '1px solid #DBEAFE', justifyContent: 'center' }}>
+        <FAIcon name='flag-checkered' style={{ fill: '#3B82F6', width: 40, height: 40 }} />
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#0F172A', marginTop: 14, lineHeight: 1.5 }}>
+          收束一句话{'\n'}
+        </Text>
+        <Text style={{ fontSize: 18, color: '#334155', lineHeight: 1.7 }}>
+          在坏人用掉那些"忘在互联网上"的云钥匙之前，{'\n'}
+          凭迹先找到它们，{'\n'}
+          告诉主人：<Text style={{ fontWeight: 'bold', color: '#3B82F6' }}>还能不能用、是谁的、该怎么换锁。</Text>
+        </Text>
+      </Box>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>凭迹 CredWatch · 项目解读 · 完</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>10 / 11</Text>
+  </Box>
+</Slide>

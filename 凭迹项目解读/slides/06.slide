@@ -1,0 +1,62 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#3B82F6', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>创新点（上）：组合风险 与 可解释评分</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 20 }}>
+    <Box style={{ height: 245, flexDirection: 'row', gap: 22 }}>
+      <Box style={{ width: 420, background: '#EFF6FF', borderRadius: 12, padding: 24, border: '1px solid #DBEAFE' }}>
+        <FAIcon name='link' style={{ fill: '#3B82F6', width: 36, height: 36 }} />
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0F172A', marginTop: 12 }}>凭据对关联</Text>
+        <Text style={{ fontSize: 17, color: '#334155', lineHeight: 1.6, marginTop: 10 }}>
+          有些字符串单看"不是完整钥匙"——{'\n'}比如 AccessKey ID 只是"钥匙上的牌子"，{'\n'}配上 Secret 才能开门。
+        </Text>
+        <Box style={{ marginTop: 'auto', background: '#0F172A', borderRadius: 8, padding: 12 }}>
+          <Text style={{ fontSize: 16, color: '#F59E0B', fontWeight: 'bold' }}>
+            同文件出现配对组合 → 整组升级 critical
+          </Text>
+        </Box>
+      </Box>
+      <Box style={{ flex: 1, gap: 14 }}>
+        <Box style={{ background: '#F8FAFC', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0F172A' }}>为什么有价值？</Text>
+          <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.6, marginTop: 8 }}>
+            多数同类工具只做单条匹配，漏掉"拼图型"泄露——而攻击者最爱这种：两条都不起眼，合起来就是完整身份。
+          </Text>
+        </Box>
+        <Box style={{ background: '#F8FAFC', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0F172A' }}>边界把控</Text>
+          <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.6, marginTop: 8 }}>
+            同文件配对 / 跨文件配对才关联；不同仓库不误关联、单条不误报——四种边界都有单元测试锁死。
+          </Text>
+        </Box>
+      </Box>
+    </Box>
+    <Box style={{ height: 250, flexDirection: 'row', gap: 22 }}>
+      <Box style={{ flex: 1.2, background: '#F0F9FF', borderRadius: 12, padding: 24, border: '1px solid #BAE6FD' }}>
+        <FAIcon name='calculator' style={{ fill: '#06B6D4', width: 36, height: 36 }} />
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0F172A', marginTop: 12 }}>可解释概率评分</Text>
+        <Text style={{ fontSize: 17, color: '#334155', lineHeight: 1.6, marginTop: 10 }}>
+          每条判定不是一个干巴巴的分数，而是一段"判词"——告诉你每个信号贡献了多少分：
+        </Text>
+        <Box style={{ background: '#0F172A', borderRadius: 8, padding: 14, marginTop: 12 }}>
+          <Text style={{ fontSize: 15, color: '#7DD3FC', lineHeight: 1.6, fontFamily: "'JetBrains Mono', Consolas, monospace" }}>
+            +1.60 命中结构化格式规则{'\n'}+1.30 邻近出现云厂商或平台名称{'\n'}+0.80 值的信息熵偏高
+          </Text>
+        </Box>
+      </Box>
+      <Box style={{ width: 330, background: '#F8FAFC', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0F172A' }}>为什么值得做</Text>
+        <Text style={{ fontSize: 16, color: '#475569', lineHeight: 1.65, marginTop: 8 }}>
+          ① 答辩时评委问"凭什么判定为真"，答得出来；{'\n'}
+          ② 调参时知道哪个信号在起作用；{'\n'}
+          ③ 权重可从人工反馈自动校准——越用越准。
+        </Text>
+      </Box>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>凭迹 CredWatch · 项目解读</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>06 / 11</Text>
+  </Box>
+</Slide>

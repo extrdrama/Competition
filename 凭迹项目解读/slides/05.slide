@@ -1,0 +1,36 @@
+<Slide style={{ width: 1280, height: 720, background: '#0F172A', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#06B6D4', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#FFFFFF' }}>凭迹的"体格"：四个数字</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 20 }}>
+    <Box style={{ flexDirection: 'row', gap: 20, height: 250 }}>
+      <Box style={{ flex: 1, background: 'rgba(59,130,246,0.10)', borderRadius: 14, padding: 24, border: '1px solid rgba(59,130,246,0.45)' }}>
+        <Text style={{ fontSize: 15, color: '#93C5FD', letterSpacing: 2 }}>监控渠道</Text>
+        <Text style={{ fontSize: 78, fontWeight: 'bold', color: '#3B82F6', lineHeight: 1.05, marginTop: 8 }}>17</Text>
+        <Text style={{ fontSize: 16, color: '#CBD5E1', lineHeight: 1.5, marginTop: 8 }}>覆盖 11 类公开平台，插件化架构——新增渠道 = 实现 1 个方法</Text>
+      </Box>
+      <Box style={{ flex: 1, background: 'rgba(6,182,212,0.10)', borderRadius: 14, padding: 24, border: '1px solid rgba(6,182,212,0.45)' }}>
+        <Text style={{ fontSize: 15, color: '#67E8F9', letterSpacing: 2 }}>检测规则</Text>
+        <Text style={{ fontSize: 78, fontWeight: 'bold', color: '#06B6D4', lineHeight: 1.05, marginTop: 8 }}>195</Text>
+        <Text style={{ fontSize: 16, color: '#CBD5E1', lineHeight: 1.5, marginTop: 8 }}>全部自研 YAML 规则，每条带"为什么判为真"的解释依据</Text>
+      </Box>
+    </Box>
+    <Box style={{ flexDirection: 'row', gap: 20, height: 250 }}>
+      <Box style={{ flex: 1, background: 'rgba(245,158,11,0.12)', borderRadius: 14, padding: 24, border: '1px solid rgba(245,158,11,0.5)' }}>
+        <Text style={{ fontSize: 15, color: '#FCD34D', letterSpacing: 2 }}>凭据类型</Text>
+        <Text style={{ fontSize: 78, fontWeight: 'bold', color: '#F59E0B', lineHeight: 1.05, marginTop: 8 }}>59</Text>
+        <Text style={{ fontSize: 16, color: '#CBD5E1', lineHeight: 1.5, marginTop: 8 }}>7 大类：云 AK、API Token、支付密钥、数据库、SSH 私钥、数字资产……</Text>
+      </Box>
+      <Box style={{ flex: 1, background: 'rgba(34,197,94,0.10)', borderRadius: 14, padding: 24, border: '1px solid rgba(34,197,94,0.45)' }}>
+        <Text style={{ fontSize: 15, color: '#86EFAC', letterSpacing: 2 }}>只读验活器</Text>
+        <Text style={{ fontSize: 78, fontWeight: 'bold', color: '#22C55E', lineHeight: 1.05, marginTop: 8 }}>16</Text>
+        <Text style={{ fontSize: 16, color: '#CBD5E1', lineHeight: 1.5, marginTop: 8 }}>确认凭据"是否仍可用"——云签名算法自实现，默认关闭、全局限速</Text>
+      </Box>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#64748B' }}>凭迹 CredWatch · 项目解读</Text>
+    <Text style={{ fontSize: 13, color: '#64748B' }}>05 / 11</Text>
+  </Box>
+</Slide>

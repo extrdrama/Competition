@@ -1,0 +1,46 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#3B82F6', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>我们做了什么，为什么要做它</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 22 }}>
+    <Box style={{ height: 140, background: '#EFF6FF', borderRadius: 12, padding: '20px 28px', justifyContent: 'center', border: '1px solid #DBEAFE' }}>
+      <Text style={{ fontSize: 23, color: '#1E3A5F', lineHeight: 1.6 }}>
+        <Text style={{ fontWeight: 'bold', color: '#3B82F6' }}>凭迹 = 泄露雷达 + 报警器：</Text>
+        持续监测 17 类公开渠道，自动发现暴露的云凭据，
+        并回答三个现有工具答不了的问题——<Text style={{ fontWeight: 'bold' }}>它还能用吗？它是谁的？该怎么处置？</Text>
+      </Text>
+    </Box>
+    <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#0F172A' }}>已有的工具不够用，差在这三处：</Text>
+    <Box style={{ flexDirection: 'row', gap: 20, height: 190 }}>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 22, border: '1px solid #E2E8F0' }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0F172A' }}>只盯着一个仓库</Text>
+        <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.6, marginTop: 10 }}>
+          传统扫描器（如各类 CI 密钥扫描）只查自己的代码仓库——可钥匙漏在"别人家院子"（公开渠道）里，它看不见。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 22, border: '1px solid #E2E8F0' }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0F172A' }}>只会喊"疑似"</Text>
+        <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.6, marginTop: 10 }}>
+          报一堆"疑似泄露"让你人工排查：是不是真的？还能用吗？是谁的？——后续全靠人肉。
+        </Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 22, border: '1px solid #E2E8F0' }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0F172A' }}>不告诉你怎么办</Text>
+        <Text style={{ fontSize: 17, color: '#475569', lineHeight: 1.6, marginTop: 10 }}>
+          没有归属识别、没有处置建议。凭迹把响应从"发现即删"升级为"定位→吊销→根因→复核"。
+        </Text>
+      </Box>
+    </Box>
+    <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 18, background: '#FFFBEB', borderRadius: 12, padding: '0 28px', border: '1px solid #FDE68A' }}>
+      <FAIcon name='bullseye' style={{ fill: '#F59E0B', width: 34, height: 34 }} />
+      <Text style={{ fontSize: 20, color: '#334155' }}>
+        这三个"差"，正好一一对应赛题的评分维度——<Text style={{ fontWeight: 'bold' }}>下面逐层拆开凭迹是怎么补上的。</Text>
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>凭迹 CredWatch · 项目解读</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>02 / 11</Text>
+  </Box>
+</Slide>

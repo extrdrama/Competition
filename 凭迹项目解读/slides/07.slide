@@ -1,0 +1,42 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#3B82F6', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>创新点（下）：让平台"越用越准、越用越广"</Text>
+  </Box>
+  <Box style={{ height: 540, flexDirection: 'row', gap: 20 }}>
+    <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 24, border: '1px solid #E2E8F0' }}>
+      <FAIcon name='sync-alt' style={{ fill: '#3B82F6', width: 36, height: 36 }} />
+      <Text style={{ fontSize: 23, fontWeight: 'bold', color: '#0F172A', marginTop: 12 }}>误报反馈闭环</Text>
+      <Text style={{ fontSize: 17, color: '#334155', lineHeight: 1.65, marginTop: 12 }}>
+        传统做法：误报 → 加白名单 → 下次同类换个花样又误报。
+      </Text>
+      <Text style={{ fontSize: 17, color: '#334155', lineHeight: 1.65, marginTop: 10 }}>
+        凭迹做法：误报作为训练样本，重新调整判定权重——{'\n'}
+        <Text style={{ fontWeight: 'bold', color: '#3B82F6' }}>标注 → 校准 → 生效 → 抑制 → 复核</Text>，
+        形成闭环，同类误报一次管住。
+      </Text>
+    </Box>
+    <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 24, border: '1px solid #E2E8F0' }}>
+      <FAIcon name='magic' style={{ fill: '#06B6D4', width: 36, height: 36 }} />
+      <Text style={{ fontSize: 23, fontWeight: 'bold', color: '#0F172A', marginTop: 12 }}>规则自动归纳</Text>
+      <Text style={{ fontSize: 17, color: '#334155', lineHeight: 1.65, marginTop: 12 }}>
+        新平台冒出来、凭据格式变了怎么办？{'\n'}
+        从已确认的泄露样本自动起草候选规则：公共前缀、长度区间、字符集、熵区间，并做冲突检测——{'\n'}
+        <Text style={{ fontWeight: 'bold' }}>一条命令即可生成可运行的新渠道骨架</Text>，答辩现场可演示。
+      </Text>
+    </Box>
+    <Box style={{ flex: 1, background: '#F8FAFC', borderRadius: 12, padding: 24, border: '1px solid #E2E8F0' }}>
+      <FAIcon name='layer-group' style={{ fill: '#F59E0B', width: 36, height: 36 }} />
+      <Text style={{ fontSize: 23, fontWeight: 'bold', color: '#0F172A', marginTop: 12 }}>镜像层"删了≠没有"</Text>
+      <Text style={{ fontSize: 17, color: '#334155', lineHeight: 1.65, marginTop: 12 }}>
+        Dockerfile 里用 ENV 传过密钥，后来改掉重新构建——{'\n'}
+        但镜像的<Text style={{ fontWeight: 'bold', color: '#F59E0B' }}>历史层</Text>仍保留旧内容，构建历史里 ENV/ARG 残留清晰可见。{'\n'}
+        凭迹逐层解包镜像，专门抓这种"自以为删干净了"的高危泄露。
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>凭迹 CredWatch · 项目解读</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>07 / 11</Text>
+  </Box>
+</Slide>

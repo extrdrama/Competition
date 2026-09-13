@@ -1,0 +1,56 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif" }}>
+  <Box style={{ height: 100, flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 24 }}>
+    <Box style={{ width: 5, height: 40, background: '#3B82F6', borderRadius: 2 }} />
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0F172A' }}>四层收敛漏斗：从 2639 条噪声里筛出 165 个真凭据</Text>
+  </Box>
+  <Box style={{ height: 540, gap: 14 }}>
+    <Text style={{ fontSize: 19, color: '#475569' }}>以第三轮真实实测（1200 份公开渠道文档）为例——每一层都在"排除假信号"，这是低误报的核心：</Text>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 26 }}>
+      <Box style={{ flex: 1, gap: 12 }}>
+        <Box style={{ width: '100%', height: 78, background: 'linear-gradient(135deg,#3B82F6,#60A5FA)', borderRadius: 10, padding: '0 24px', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#FFFFFF' }}>① 格式命中候选</Text>
+          <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#FFFFFF' }}>32088</Text>
+        </Box>
+        <Box style={{ width: '72%', height: 78, background: 'linear-gradient(135deg,#0EA5E9,#38BDF8)', borderRadius: 10, padding: '0 24px', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#FFFFFF' }}>② 上下文确认</Text>
+          <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#FFFFFF' }}>334</Text>
+        </Box>
+        <Box style={{ width: '46%', height: 78, background: 'linear-gradient(135deg,#06B6D4,#22D3EE)', borderRadius: 10, padding: '0 24px', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#FFFFFF' }}>③ 去重后发现</Text>
+          <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#FFFFFF' }}>178</Text>
+        </Box>
+        <Box style={{ width: '30%', height: 78, background: 'linear-gradient(135deg,#22C55E,#4ADE80)', borderRadius: 10, padding: '0 24px', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#FFFFFF' }}>④ 关联升级</Text>
+          <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#FFFFFF' }}>165</Text>
+        </Box>
+      </Box>
+      <Box style={{ width: 380, gap: 14 }}>
+        <Box style={{ background: '#F8FAFC', borderRadius: 10, padding: 16, border: '1px solid #E2E8F0' }}>
+          <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#0F172A' }}>每层在做什么</Text>
+          <Text style={{ fontSize: 15, color: '#475569', lineHeight: 1.6, marginTop: 6 }}>
+            ①195 条规则粗筛（格式长得像凭据）{'\n'}
+            ②看附近有没有"password=、云厂商名"等情证{'\n'}
+            ③HMAC 指纹去重 + 可解释概率评分{'\n'}
+            ④成对凭据关联升级为最高风险
+          </Text>
+        </Box>
+        <Box style={{ background: '#FFFBEB', borderRadius: 10, padding: 16, border: '1px solid #FDE68A' }}>
+          <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#0F172A' }}>收敛比 ≈ 1 : 194</Text>
+          <Text style={{ fontSize: 15, color: '#475569', lineHeight: 1.6, marginTop: 6 }}>
+            每漏斗一次，噪声被砍掉 99.5%——误报控制的硬功夫全在这四层里。
+          </Text>
+        </Box>
+      </Box>
+    </Box>
+    <Box style={{ height: 64, background: '#F8FAFC', borderRadius: 10, padding: '0 24px', alignItems: 'center', flexDirection: 'row', border: '1px solid #E2E8F0' }}>
+      <FAIcon name='shield-alt' style={{ fill: '#06B6D4', width: 26, height: 26 }} />
+      <Text style={{ fontSize: 17, color: '#334155', marginLeft: 12 }}>
+        1200 份文档、46.3 MB，整轮扫描只要 <Text style={{ fontWeight: 'bold', color: '#3B82F6' }}>6.5 秒</Text>——快，才有资格谈"分钟级发现"。
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>凭迹 CredWatch · 项目解读</Text>
+    <Text style={{ fontSize: 13, color: '#94A3B8' }}>04 / 11</Text>
+  </Box>
+</Slide>

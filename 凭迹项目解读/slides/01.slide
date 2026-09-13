@@ -1,0 +1,23 @@
+<Slide style={{ width: 1280, height: 720, background: '#0F172A', padding: '0 70px', fontFamily: "'思源黑体', 'Microsoft YaHei', sans-serif", position: 'relative', overflow: 'hidden' }}>
+  <Box style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 8, background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)' }} />
+  <Box style={{ position: 'absolute', top: -80, left: -60, width: 320, height: 320, borderRadius: 200, background: 'rgba(6,182,212,0.10)' }} />
+  <Box style={{ position: 'absolute', bottom: -90, right: -40, width: 300, height: 300, borderRadius: 180, background: 'rgba(59,130,246,0.12)' }} />
+  <Box style={{ height: 190, justifyContent: 'center' }}>
+    <Text style={{ fontSize: 18, color: '#06B6D4', letterSpacing: 6, fontWeight: 'bold' }}>揭榜挑战赛 · 题目 3 · 防御性安全作品</Text>
+  </Box>
+  <Box style={{ gap: 24 }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 24 }}>
+      <FAIcon name='satellite-dish' style={{ fill: '#06B6D4', width: 60, height: 60 }} />
+      <Text style={{ fontSize: 56, fontWeight: 'bold', color: '#FFFFFF' }}>凭迹 CredWatch</Text>
+    </Box>
+    <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#E2E8F0' }}>给云凭据泄露装上"雷达 + 报警器"</Text>
+    <Text style={{ fontSize: 21, color: '#94A3B8', lineHeight: 1.6 }}>
+      把"凭据从公开暴露，到被主人发现"的时间窗，从行业常见的数天甚至数月，{'\n'}
+      压缩到 <Text style={{ color: '#F59E0B', fontWeight: 'bold', fontSize: 24 }}>分钟级。</Text>
+    </Text>
+  </Box>
+  <Box style={{ position: 'absolute', bottom: 40, left: 70, right: 70, flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>凭迹 CredWatch · 项目解读</Text>
+    <Text style={{ fontSize: 14, color: '#64748B' }}>01 / 11</Text>
+  </Box>
+</Slide>

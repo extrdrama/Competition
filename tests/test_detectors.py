@@ -214,6 +214,53 @@ class TestProbabilityScoring(unittest.TestCase):
             self.assertLessEqual(probability, 1.0)
 
 
+class TestNewPlatformRules(unittest.TestCase):
+    """新增平台前缀规则：专有前缀命中、普通串不误报。"""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.engine = RuleEngine.from_dir(RULES_DIR)
+
+    def _detect(self, text: str) -> set[str]:
+        from credwatch.models import Document
+
+        doc = Document(
+            doc_id="d", source="local_dir", url="file://t/x",
+            text=text, path_hint="x.py",
+            metadata={"source_category": "本地与企业内网"},
+        )
+        result = DetectionPipeline(self.engine, hmac_salt="s").run([doc])
+        return {f.rule_id for f in result.findings}
+
+    def test_new_prefixes_are_detected(self) -> None:
+        cases = {
+            "groq-api-key": "GROQ_API_KEY=gsk_AbCdEf1234567890GhIjKl",
+            "xai-api-key": "XAI_KEY=xai-AbCdEf1234567890GhIjKl",
+            "openrouter-api-key": "key=sk-or-v1-" + "a1b2c3d4" * 6,
+            "atlassian-api-token": "token=ATATT3CCGxN3mMOPQ1RsTUVWXYZ0123456789abcd",
+            "postman-api-key": "PMAK-abcdef1234567890abcdef12-" + "a" * 34,
+            "databricks-token": "DATABRICKS_TOKEN=dapi" + "a1b2c3d4" * 4,
+            "figma-pat": "figd_" + "A1b2C3d4E5" * 5,
+            "linode-token": "LINODE=lin_api_" + "A1b2C3d4E5" * 5,
+            "onepassword-service-token": "OPS=ops_A1b2C3d4E5F6g7H8i9J0",
+            "pypi-upload-token": "password = pypi-" + "A1b2C3d4E5" * 12,
+            "npm-granular-token": "NPM_TOKEN=npm_" + "A1b2C3d4" * 4 + "A1b2",
+            "replicate-api-token": "R8=" + "r8_" + "A1b2C3d4" * 5,
+            "shopify-token": "SHOPIFY=shpat_" + "a1b2c3d4" * 4,
+            "square-access-token": "SQ=sq0atp-_0YtAZba7ClXtEpKoXFh2yM",
+        }
+        for rule_id, text in cases.items():
+            rules = self._detect(text)
+            self.assertIn(rule_id, rules, f"{rule_id} 未命中样例: {text[:40]}")
+
+    def test_normal_strings_do_not_trigger_new_rules(self) -> None:
+        text = "const groq = 'hello world'; xai = 42; npm install foo"
+        rules = self._detect(text)
+        new_rules = {r for r in rules if r in {
+            "groq-api-key", "xai-api-key", "npm-granular-token", "atlassian-api-token"}}
+        self.assertFalse(new_rules, f"普通文本误报: {new_rules}")
+
+
 class TestRealDataHardening(unittest.TestCase):
     """这两组用例来自**真实 GitHub 公开数据实测**暴露的问题，用于锁死修复。
 

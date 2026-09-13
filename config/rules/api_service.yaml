@@ -9,7 +9,7 @@ rules:
     name: OpenAI API Key
     kind: 大模型平台令牌
     severity: high
-    pattern: '(?<![A-Za-z0-9_-])(sk-(?:proj-|svcacct-|admin-)?[A-Za-z0-9_-]{20,})'
+    pattern: '(?<![A-Za-z0-9_-])(sk-(?!or-)(?:proj-|svcacct-|admin-)?[A-Za-z0-9_-]{20,})'
     keywords: [openai, api_key]
     validator: openai
     description: OpenAI API Key，泄露后可消耗额度并访问账号数据。

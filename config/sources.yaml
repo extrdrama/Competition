@@ -12,6 +12,7 @@ sources:
   github:
     enabled: true
     mode: recent              # search（历史广度）/ repo（指定仓库）/ recent（时效优先）
+    interval_minutes: 15      # 时效性：watch 常驻模式下该渠道 15 分钟轮询一次
     max_items: 200
     per_page: 30
     include_gist: true
@@ -145,7 +146,7 @@ sources:
   # ------------------------------------------------------- 本地与企业内网
   local_dir:
     enabled: true
-    paths: []                 # 留空则仅扫描 demo/samples
+    paths: []                 # 要扫描的本地/内网目录列表
     include_archives: true
     max_files: 20000
     follow_symlinks: false
@@ -158,3 +159,18 @@ sources:
       - password
       - access_key
       - token
+
+  # ------------------------------------------------------- 社交媒体
+  telegram:
+    enabled: false          # 填入要监控的公开频道名后开启
+    max_items: 80
+    channels:
+      - durov               # 示例；替换为实际要监控的公开频道
+
+  # ------------------------------------------------------- 自托管与公告
+  rss_feed:
+    enabled: false          # 填入要监控的 RSS/Atom 源后开启
+    max_items: 100
+    feeds: []
+    # feeds:
+    #   - https://example.com/feed.xml

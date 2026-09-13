@@ -1,0 +1,156 @@
+# 新平台与新兴服务凭据规则
+# 说明：全部采用"平台专有前缀"或"强上下文锚定"模式，控制误报；
+#      前缀类正则的 literal run 较长，规则库自检（lint-rules）可通过。
+label: 新兴平台与国产生态凭据
+rules:
+  # ------------------------------------------------------------ 大模型平台
+  - id: groq-api-key
+    name: Groq API Key
+    kind: 大模型平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(gsk_[A-Za-z0-9]{20,60})(?![A-Za-z0-9_])'
+    keywords: [groq]
+    description: Groq 推理平台 API Key，泄露后可消耗额度。
+
+  - id: xai-api-key
+    name: xAI (Grok) API Key
+    kind: 大模型平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(xai-[A-Za-z0-9]{20,60})(?![A-Za-z0-9_])'
+    keywords: [xai, grok]
+    description: xAI (Grok) API Key。
+
+  - id: openrouter-api-key
+    name: OpenRouter API Key
+    kind: 大模型平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(sk-or-v1-[a-f0-9]{32,64})(?![a-f0-9])'
+    keywords: [openrouter]
+    description: OpenRouter 聚合网关 API Key。
+
+  - id: replicate-api-token
+    name: Replicate API Token
+    kind: 大模型平台令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(r8_[A-Za-z0-9]{37,40})(?![A-Za-z0-9_])'
+    keywords: [replicate]
+    description: Replicate 模型托管平台 Token。
+
+  # ------------------------------------------------------------ SaaS 与开发工具
+  - id: atlassian-api-token
+    name: Atlassian API Token
+    kind: SaaS 协作凭据
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(ATATT[A-Za-z0-9_\-]{30,})(?![A-Za-z0-9_\-])'
+    keywords: [atlassian, jira, confluence]
+    description: Atlassian（Jira/Confluence）API Token，可访问企业知识库与工单。
+
+  - id: figma-pat
+    name: Figma 个人访问令牌
+    kind: SaaS 协作凭据
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(figd_[A-Za-z0-9_\-]{40,})(?![A-Za-z0-9_\-])'
+    keywords: [figma]
+    description: Figma 个人访问令牌，可读取设计稿与团队文件。
+
+  - id: postman-api-key
+    name: Postman API Key
+    kind: 开发工具凭据
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(PMAK-[A-Fa-f0-9]{24}-[A-Fa-f0-9]{34})(?![A-Fa-f0-9])'
+    keywords: [postman]
+    description: Postman API Key，可导出工作区集合——接口集合常含内网地址与硬编码凭据。
+
+  - id: databricks-token
+    name: Databricks 访问令牌
+    kind: 数据平台凭据
+    severity: critical
+    pattern: '(?<![A-Za-z0-9_])(dapi[a-f0-9]{32})(?![a-f0-9])'
+    keywords: [databricks]
+    description: Databricks 访问令牌，可直接访问数据仓库与集群。
+
+  - id: grafana-service-token
+    name: Grafana 服务账号令牌
+    kind: 开发工具凭据
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(eyJr[A-Za-z0-9_=\-]{50,})(?![A-Za-z0-9_=\-])'
+    require_keywords: [grafana]
+    description: Grafana 服务账号 JWT 令牌，可读取面板数据源（常含数据库连接串）。
+
+  - id: onepassword-service-token
+    name: 1Password 服务账号令牌
+    kind: 密码管理凭据
+    severity: critical
+    pattern: '(?<![A-Za-z0-9_])(ops_[A-Za-z0-9]{20,60})(?![A-Za-z0-9_])'
+    keywords: [1password, onepassword]
+    description: 1Password 服务账号令牌，可编程读取整个保险库。
+
+  # ------------------------------------------------------------ 云与包仓库
+  - id: linode-token
+    name: Linode API Token
+    kind: 云平台凭据
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(lin_api_[A-Za-z0-9_]{40,})(?![A-Za-z0-9_])'
+    keywords: [linode, akamai]
+    description: Linode（Akamai）API Token，可控制云主机。
+
+  - id: pypi-upload-token
+    name: PyPI 上传令牌
+    kind: 包仓库令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(pypi-[A-Za-z0-9_\-]{100,})(?![A-Za-z0-9_\-])'
+    keywords: [pypi]
+    description: PyPI 上传令牌，可向同名包投毒——供应链攻击入口。
+
+  - id: npm-granular-token
+    name: npm 细粒度访问令牌
+    kind: 包仓库令牌
+    severity: high
+    pattern: '(?<![A-Za-z0-9_])(npm_[A-Za-z0-9]{36})(?![A-Za-z0-9_])'
+    keywords: [npm]
+    description: npm 细粒度访问令牌，可发布/修改包。
+
+  # ------------------------------------------------------------ 支付与电商
+  - id: shopify-token
+    name: Shopify 访问令牌
+    kind: 电商平台凭据
+    severity: critical
+    pattern: '(?<![A-Za-z0-9_])(shp(?:at|ss|ca)_[a-fA-F0-9]{32})(?![a-fA-F0-9])'
+    keywords: [shopify]
+    description: Shopify 店铺访问令牌（Admin API），可读取订单与客户数据。
+
+  - id: square-access-token
+    name: Square 访问令牌
+    kind: 支付凭据
+    severity: critical
+    pattern: '(?<![A-Za-z0-9_])(sq0atp-[A-Za-z0-9_\-]{22,}|sq0csp-[A-Za-z0-9_\-]{43})(?![A-Za-z0-9_\-])'
+    keywords: [square]
+    description: Square 支付平台访问令牌。
+
+  - id: wechat-pay-apiv3-key
+    name: 微信支付 APIv3 密钥
+    kind: 支付凭据
+    severity: critical
+    pattern: "(?i)(?:api_?v3_?key|apiv3key)[\"']?\\s*[:=]\\s*[\"']?([A-Za-z0-9]{32})(?![A-Za-z0-9])"
+    require_keywords: [wechat, weixin, wxpay, 微信]
+    secret_group: 1
+    description: 微信支付 APIv3 密钥，可解密订单与回调报文。
+
+  # ------------------------------------------------------------ 国产生态
+  - id: wechat-miniapp-appsecret
+    name: 微信小程序 AppSecret
+    kind: 小程序凭据
+    severity: critical
+    pattern: "(?i)(?:wx)?app_?secret[\"']?\\s*[:=]\\s*[\"']?([a-f0-9]{32})(?![a-f0-9])"
+    require_keywords: [wx, wechat, weixin, 微信, 小程序]
+    secret_group: 1
+    description: 微信小程序 AppSecret，配合 AppID 可获取用户数据与接口调用凭据。
+
+  - id: wecom-corp-secret
+    name: 企业微信应用 Secret
+    kind: 企业IM凭据
+    severity: critical
+    pattern: '(?i)(?:corp)?secret=([A-Za-z0-9]{32})(?![A-Za-z0-9])'
+    require_keywords: [qyapi.weixin, wecom, 企业微信]
+    secret_group: 1
+    description: 企业微信应用 Secret（常出现在 gettoken 调用中），可获取企业通讯录与会话。

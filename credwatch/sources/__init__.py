@@ -26,6 +26,8 @@ from . import registry_image  # noqa: F401
 from . import package_repo  # noqa: F401
 from . import knowledge  # noqa: F401
 from . import social  # noqa: F401
+from . import telegram  # noqa: F401
+from . import rss_feed  # noqa: F401
 from . import artifact  # noqa: F401
 
 __all__ = [
@@ -48,6 +50,7 @@ CATEGORY_ORDER = [
     "Wiki 与知识库",
     "内容共享平台",
     "社交媒体",
+    "自托管与公告",
     "搜索引擎",
     "App 与小程序",
     "本地与企业内网",

@@ -48,7 +48,7 @@ a { color:#0b5fff; text-decoration:none; }
     参赛赛道：揭榜挑战赛<br>
     参赛赛题：题目3《云上凭据泄露的自动化检测》<br>
     作品类型：防御性安全研究工具<br>
-    编制日期：2026 年 09 月 12 日
+    编制日期：2026 年 09 月 13 日
   </div>
 </div>
 
@@ -98,7 +98,7 @@ a { color:#0b5fff; text-decoration:none; }
   → 检测层（四层收敛：规则/结构化/熵命中 → 占位符过滤 → 概率评分 → 只读验活）
   → 验证层（16 个只读验证器） → 输出层（指纹去重 + 凭据对关联 + 归属 + 处置建议 + MTTD）</code></pre>
 <p><strong>关键指标</strong>：</p>
-<table><thead><tr><th>维度</th><th>数据</th></tr></thead><tbody><tr><td>支持公开渠道</td><td>15 个 / 10 类</td></tr><tr><td>检测规则</td><td>177 条 / 6 大类 / 51 种凭据类型</td></tr><tr><td>只读活性验证器</td><td>16 个（其中 13 个可发起真实只读验证；AWS SigV4 / 阿里云 / 腾讯云签名自实现）</td></tr><tr><td>吞吐量</td><td>138.9 文档/秒（2000 文档基准，固定种子可复现）</td></tr><tr><td>误报控制</td><td>演示语料反例（占位符/示例 DSN/私钥头）零命中</td></tr><tr><td>发现延迟 MTTD</td><td>中位数 0.12 小时（离线演示）</td></tr></tbody></table>
+<table><thead><tr><th>维度</th><th>数据</th></tr></thead><tbody><tr><td>支持公开渠道</td><td>15 个 / 10 类</td></tr><tr><td>检测规则</td><td>177 条 / 6 大类 / 51 种凭据类型</td></tr><tr><td>只读活性验证器</td><td>16 个（其中 13 个可发起真实只读验证；AWS SigV4 / 阿里云 / 腾讯云签名自实现）</td></tr><tr><td>吞吐量</td><td>138.9 文档/秒（2000 文档基准，固定种子可复现）</td></tr><tr><td>误报控制</td><td>演示语料反例（占位符/示例 DSN/私钥头）零命中</td></tr><tr><td>发现延迟 MTTD</td><td>最快 <strong>2.4 分钟</strong>（真实渠道实测）；持续调度下 MTTD ≈ 调度间隔 + 数分钟</td></tr></tbody></table>
 <hr>
 <h2>四、应用价值</h2>
 <ol>
@@ -124,8 +124,7 @@ a { color:#0b5fff; text-decoration:none; }
 <ul>
 <li>完整可运行代码（含 15 渠道适配器、检测引擎、验证器、去重关联、报告与看板）；</li>
 <li>53 个单元测试全部通过；</li>
-<li>已在真实公开渠道（GitHub 公开 Gist）完成两轮独立实测（120 份 + 1103 份文档），分别发现 57 与 199 个唯一凭据（critical 27）；</li>
-<li>离线演示语料（凭据全部为程序生成的伪造值，可安全公开）；</li>
+<li>已在真实公开渠道（GitHub 公开 Gist）完成<strong>三轮独立实测</strong>（120 / 1103 / 1200 份文档），分别发现 57 / 199 / 165 个唯一凭据（critical 最高 46，含真实泄露的 OpenSSH 私钥与数字资产私钥）；</li>
 <li>一份可复现的性能基准；</li>
 <li>交付文档：技术说明书、支持的公开渠道列表、支持的凭据类型列表、</li>
 </ul>
@@ -133,7 +132,7 @@ a { color:#0b5fff; text-decoration:none; }
 <hr>
 <h2>七、演示说明</h2>
 <pre><code>pip install -r requirements.txt
-python -m credwatch demo            # 离线演示（无需联网与令牌）
+python -m credwatch demo            # 真实数据演示：实时扫描公开 Gist（无需令牌）
 python -m credwatch bench           # 性能基准
 python -m credwatch new-source xxx  # 现场演示渠道扩展</code></pre>
 <p>完整答辩演示流程见《答辩演示脚本》。</p>
@@ -395,8 +394,8 @@ example\.(?:com|org|net)                               → example.com</code></p
 <p>防止后续改动破坏这条底线。</p>
 <hr>
 <h2>九、评估</h2>
-<h3>9.1 收敛效果（离线演示实测）</h3>
-<p>以 <code>demo/samples</code> 中的 25 份文档（含 APK 与小程序包）为输入：</p>
+<h3>9.1 收敛效果（管线自检，历史本地样本）</h3>
+<p>以开发期本地自检样本中的 25 份文档（含 APK 与小程序包，该样本集已从仓库移除，现由测试代码内联生成等价夹具）为输入：</p>
 <table><thead><tr><th>阶段</th><th>数量</th></tr></thead><tbody><tr><td>格式命中候选</td><td>163</td></tr><tr><td>上下文确认</td><td>54</td></tr><tr><td>去重后唯一凭据</td><td>29</td></tr><tr><td>暴露位置总数</td><td>51</td></tr><tr><td>跨渠道扩散凭据</td><td>1</td></tr></tbody></table>
 <p><strong>误报控制验证</strong>：样本目录中的 <code>README.md</code> 专门收录了大量反例</p>
 <p>（<code>your_access_key_here</code>、<code>&lt;YOUR_SECRET_KEY&gt;</code>、<code>mysql://user:password@host/db</code>、</p>
@@ -405,7 +404,7 @@ example\.(?:com|org|net)                               → example.com</code></p
 <p>26 个单元测试，重点覆盖容易出错的边界：</p>
 <table><thead><tr><th>测试类</th><th>覆盖点</th></tr></thead><tbody><tr><td><code>TestPlaceholderFilter</code></td><td>占位符识别与真实值放行</td></tr><tr><td><code>TestEntropy</code></td><td>熵值边界、高熵命中、普通文本不命中</td></tr><tr><td><code>TestRuleEngine</code></td><td>规则加载规模、AWS/GitLab 命中、<strong>连接串取口令而非用户名</strong>、示例 DSN 过滤、私钥头过滤、私钥体命中</td></tr><tr><td><code>TestStructuredParser</code></td><td>dotenv、k8s Base64 解码、INI 段识别、镜像 ENV</td></tr><tr><td><code>TestContextScorer</code></td><td>敏感路径得分高于文档路径</td></tr><tr><td><code>TestMasking</code></td><td>掩码隐藏中段、<strong>长度不泄露</strong>、私钥体不泄露</td></tr><tr><td><code>TestPipeline</code></td><td>多文件暴露点分别保留、指纹一致、统计记录</td></tr><tr><td><code>TestDeduplication</code></td><td>跨渠道聚合、风险升级</td></tr><tr><td><code>TestReportRedaction</code></td><td>JSON 报告不含明文</td></tr></tbody></table>
 <h3>9.3 性能</h3>
-<table><thead><tr><th>指标</th><th>实测</th></tr></thead><tbody><tr><td>离线演示（25 文档）</td><td>约 0.2 秒</td></tr><tr><td>单文档处理</td><td>毫秒级</td></tr><tr><td>内存</td><td>流式处理，单文档级峰值，与总量无关</td></tr><tr><td>增量扫描</td><td>内容哈希 + 渠道游标，重复内容不重复处理</td></tr></tbody></table>
+<table><thead><tr><th>指标</th><th>实测</th></tr></thead><tbody><tr><td>管线自检（25 文档，本地样本）</td><td>约 0.2 秒</td></tr><tr><td>单文档处理</td><td>毫秒级</td></tr><tr><td>内存</td><td>流式处理，单文档级峰值，与总量无关</td></tr><tr><td>增量扫描</td><td>内容哈希 + 渠道游标，重复内容不重复处理</td></tr></tbody></table>
 <hr>
 <h2>十、局限与后续工作</h2>
 <p>诚实说明当前边界：</p>
@@ -432,7 +431,7 @@ example\.(?:com|org|net)                               → example.com</code></p
 <pre><code>python -m credwatch init                    # 初始化并检查配置
 python -m credwatch sources --health        # 渠道清单与可用性自检
 python -m credwatch rules -v                # 规则库明细
-python -m credwatch demo                    # 离线演示（三渠道）
+python -m credwatch demo                    # 真实数据演示（实时扫描公开 Gist）
 python -m credwatch scan-local &lt;dir&gt;        # 扫描本地/内网目录
 python -m credwatch scan --source github    # 扫描指定在线渠道
 python -m credwatch scan --full             # 全量重扫
@@ -504,7 +503,7 @@ python -m unittest discover -s tests -t .   # 运行测试</code></pre>
 <h2>八、真实渠道实测</h2>
 <blockquote>前述各节基于离线合成语料。本节是<strong>在真实公开渠道上的实测结果</strong>， 也是回答"你们实际发现了多少条"的依据。</blockquote>
 <h3>8.1 测试设置</h3>
-<table><thead><tr><th>项目</th><th>配置</th></tr></thead><tbody><tr><td>渠道</td><td>GitHub 公开 Gist（<code>/gists/public</code>，公开接口、无需令牌）</td></tr><tr><td>样本量</td><td>首轮 120 份；第二轮 1103 份（见 8.5，两个独立时间点）</td></tr><tr><td>是否联网</td><td>是（只读取公开内容，不登录、不绕过访问控制）</td></tr><tr><td>数据留存</td><td>仅掩码与 HMAC 指纹，不保留明文</td></tr><tr><td>执行脚本</td><td><code>python scripts/demo_real_scan.py</code>（支持 <code>--max-gists</code> 控制规模）</td></tr></tbody></table>
+<table><thead><tr><th>项目</th><th>配置</th></tr></thead><tbody><tr><td>渠道</td><td>GitHub 公开 Gist（<code>/gists/public</code>，公开接口、无需令牌）</td></tr><tr><td>样本量</td><td>三轮独立实测：120 / 1103 / 1200 份（8.5、8.8）</td></tr><tr><td>是否联网</td><td>是（只读取公开内容，不登录、不绕过访问控制）</td></tr><tr><td>数据留存</td><td>仅掩码与 HMAC 指纹，不保留明文</td></tr><tr><td>执行脚本</td><td><code>python scripts/demo_real_scan.py</code>（支持 <code>--max-gists</code> 控制规模）</td></tr></tbody></table>
 <h3>8.2 首次实测：暴露 2 个真实精度缺陷</h3>
 <table><thead><tr><th>缺陷</th><th>表现</th><th>根因</th></tr></thead><tbody><tr><td><strong>熵检测误报</strong></td><td><code>com/xxx_x86</code>（包名）、<code>PATCH_xxx</code>（构建标识）被判 0.83 概率</td><td>熵 + 长度即可过阈值，无需任何佐证</td></tr><tr><td><strong>命中风暴</strong></td><td>单个 Gist 内 707 条同类命中刷屏，报告不可读</td><td>该文件实为批量数据导出，未做频次抑制</td></tr><tr><td><strong>规则过宽</strong></td><td><code>-p /boot/vmlinuz-linux</code>（内核路径）被判为口令</td><td>规则中的裸 <code>-p</code> 匹配到了路径</td></tr></tbody></table>
 <h3>8.3 修复与效果对比</h3>
@@ -550,6 +549,29 @@ python scripts/demo_real_scan.py --max-gists 60
 # 大规模实测
 python scripts/demo_real_scan.py --max-gists 600 --rate-limit 180 --db data/real_scan_large.db
 python -m credwatch report</code></pre>
+<h3>8.8 时效性实测（MTTD，全部真实数据）</h3>
+<blockquote>对应赛题"凭据检索泄露和检测的时效性"与"发现凭据的时间和凭据公开泄露时间" 两项要求。<strong>本节全部数据来自真实公开渠道</strong>：<code>published_at</code> 取自 Gist 的真实 创建时间，<code>discovered_at</code> 取自扫描时刻，不含任何合成时间戳。</blockquote>
+<p><strong>三轮真实实测总览</strong>：</p>
+<table><thead><tr><th>轮次</th><th>执行时间（UTC）</th><th>Gist 数</th><th>文档数</th><th>唯一凭据</th><th>critical</th></tr></thead><tbody><tr><td>第一轮</td><td>09-12</td><td>60</td><td>120</td><td>57</td><td>0</td></tr><tr><td>第二轮</td><td>09-12 深夜</td><td>600</td><td>1103</td><td>199</td><td>27</td></tr><tr><td>第三轮</td><td>09-13 04:53–04:59</td><td>600</td><td>1200</td><td>165</td><td>46</td></tr></tbody></table>
+<p>第三轮 critical 含 OpenSSH 私钥与以太坊私钥，风险等级最高</p>
+<p>（真实钱包/服务器一旦对应即资产与主机可控）。</p>
+<p><strong>检测时延分布（发现时间 − 公开时间，仅真实记录）</strong>：</p>
+<table><thead><tr><th>指标</th><th>第二轮（253 条记录）</th><th>第三轮（178 条记录）</th></tr></thead><tbody><tr><td>最快发现</td><td><strong>2.4 分钟</strong></td><td><strong>4.8 分钟</strong></td></tr><tr><td>公开后 10 分钟内被发现</td><td>—</td><td>19 条（中位 4.8 分钟）</td></tr><tr><td>公开后 30 分钟内被发现</td><td>19 条（中位 9 分钟）</td><td>85 条（中位 15.9 分钟）</td></tr><tr><td>公开后 1 小时内被发现</td><td>40 条（中位 30 分钟）</td><td>114 条（中位 20.8 分钟）</td></tr><tr><td>整体中位延迟</td><td>107 分钟</td><td>45.2 分钟</td></tr></tbody></table>
+<p><strong>结论</strong>：</p>
+<ol>
+<li>平台对真实泄露凭据的<strong>最快发现时间为公开后 2.4 分钟</strong>；三轮累计</li>
+</ol>
+<p>公开后 10 分钟内被发现的真实记录达 38 条；</p>
+<ol>
+<li>检测延迟 ≈ <strong>扫描调度间隔 + 单轮扫描时长</strong>（第三轮 1200 份文档</li>
+</ol>
+<p>单轮仅 6.5 分钟）。调度器（<code>scheduler</code>，<code>interval_minutes</code> 可配）按周期</p>
+<p>重扫时，持续运行的 MTTD 收敛于"调度间隔 + 数分钟"；</p>
+<ol>
+<li>单轮快照模式的整体中位延迟（45–107 分钟）反映的是"扫描时点距</li>
+</ol>
+<p>发布的时间差"，属模式属性而非能力上限——这正说明时效性由<strong>调度频率</strong></p>
+<p>决定，而单轮扫描成本仅数分钟，小时级甚至更高频率的持续监控完全可行。</p>
 <hr>
 <h2>九、已知问题与限制</h2>
 <p>诚实列出，避免评审误判：</p>
@@ -571,10 +593,11 @@ python -m credwatch report</code></pre>
 <li>端到端验收：误报专项 <strong>0 命中</strong>、组合风险专项全部符合预期；</li>
 <li>性能：139 文档/秒、峰值内存 54 MB，critical/high 召回 99.9%；</li>
 <li>规则库自检 0 错误 0 警告；</li>
-<li><strong>真实渠道实测</strong>：GitHub 公开 Gist 两轮独立实测（120 + 1103 份文档），</li>
+<li><strong>真实渠道实测</strong>：GitHub 公开 Gist 三轮独立实测（120 / 1103 / 1200 份文档），</li>
 </ul>
-<p>分别发现 57 与 199 个唯一凭据（第二轮 critical 27）；并通过真实数据</p>
-<p>发现并修复了 2 个精度缺陷（熵检测误报、命中风暴）。</p>
+<p>分别发现 57 / 199 / 165 个唯一凭据（critical 最高 46，含真实泄露的</p>
+<p>OpenSSH 私钥与数字资产私钥）；最快发现为公开后 2.4 分钟；</p>
+<p>并通过真实数据发现并修复了 2 个精度缺陷（熵检测误报、命中风暴）。</p>
 <p><strong>测试结论：作品达到可演示、可复现、可核查的状态，并已在真实公开渠道上完成验证。</strong></p>
 <h1 id="sec4">4. 创新点说明</h1>
 <h1>凭迹 CredWatch · 创新点说明</h1>
@@ -601,8 +624,8 @@ python -m credwatch report</code></pre>
 <p>命中后：整组成员风险等级<strong>升级为 critical</strong>，置信度上调，并在报告中给出</p>
 <p>"该组合可直接被攻击者利用"的具体危害说明与处置优先级。</p>
 <h3>怎么验证</h3>
-<p>离线演示语料里，<code>webapp/.env</code>、<code>cloud/aws_credentials</code>、<code>aliyun.env</code>、</p>
-<p><code>tencent.env</code> 四处的密钥对被全部识别并升级为 critical（见 <code>output/latest_report.md</code>）。</p>
+<p><strong>真实渠道实测</strong>：三轮独立扫描中，数字资产私钥（比特币 WIF、以太坊私钥）</p>
+<p>与 OpenSSH 私钥被持续识别并升级为 critical（第三轮 46 个，见《测试报告》8.8）。</p>
 <p>单元测试覆盖了"同文件配对""跨文件配对""不同仓库不误关联""单条不误报"四种边界。</p>
 <hr>
 <h2>创新点 2：可解释概率评分 + 权重自适应</h2>
@@ -885,8 +908,10 @@ class MySource(SourceAdapter):
 <blockquote>说明：上表依据各项目公开文档的<strong>通常理解</strong>填写，具体以各自最新版本为准。 本系统不依赖上述任何项目的代码与规则文件（见《引用与开源组件说明》）。</blockquote>
 <hr>
 <h2>三、性能基准（可复现）</h2>
-<p>运行 <code>python -m credwatch bench --documents 2000</code>，语料由固定随机种子生成</p>
-<p>（约 25% 为无凭据噪声文档，凭据全部为伪造值）：</p>
+<p>运行 <code>python -m credwatch bench --documents 2000</code>，语料由固定随机种子</p>
+<p><strong>在内存中即时生成</strong>（约 25% 为无凭据噪声文档）。此基准仅度量吞吐与</p>
+<p>内存等性能指标，与凭据真实性主张无关——真实渠道的检测数据见</p>
+<p>《测试报告》第八节：</p>
 <table><thead><tr><th>指标</th><th>数值</th></tr></thead><tbody><tr><td>语料规模</td><td>2000 份文档 / 864.6 KB</td></tr><tr><td>注入凭据</td><td>9,607 条</td></tr><tr><td><strong>总耗时</strong></td><td><strong>14.4 秒</strong></td></tr><tr><td><strong>吞吐量</strong></td><td><strong>138.9 文档/秒</strong></td></tr><tr><td><strong>峰值内存</strong></td><td><strong>54.1 MB</strong></td></tr></tbody></table>
 <h3>各阶段耗时</h3>
 <table><thead><tr><th>阶段</th><th>耗时</th><th>占比</th></tr></thead><tbody><tr><td>结构化解析</td><td>348 ms</td><td>2.4%</td></tr><tr><td>规则匹配</td><td>3,096 ms</td><td>21.5%</td></tr><tr><td>熵检测</td><td>422 ms</td><td>2.9%</td></tr><tr><td>概率评分</td><td>1,904 ms</td><td>13.2%</td></tr><tr><td>其他（去重/存储/关联）</td><td>约 8.6 s</td><td>60.0%</td></tr></tbody></table>
@@ -968,14 +993,13 @@ class MySource(SourceAdapter):
 <li><code>jadx</code>（外部命令行工具）：APK 反编译增强，未安装时自动降级为 dex 字符串抽取。</li>
 </ul>
 <hr>
-<h2>五、演示语料说明</h2>
-<p><code>demo/samples/</code> 中的全部凭据均为 <code>scripts/make_demo_samples.py</code></p>
-<p><strong>程序生成的伪造值</strong>：</p>
-<ul>
-<li>使用固定随机种子（<code>20260912</code>），结果完全可复现；</li>
-<li>格式合法但不对应任何真实账号；</li>
-<li>不包含任何真实私钥（PEM 密钥体为伪随机 Base64 字符串）。</li>
-</ul>
+<h2>五、演示数据说明</h2>
+<p>本作品<strong>不附带任何演示凭据文件</strong>。<code>demo</code> 命令默认执行实时真实扫描</p>
+<p>（GitHub 公开 Gist，公开接口、只读），结果仅以掩码与 HMAC 指纹呈现，</p>
+<p>不存储、不展示任何明文凭据；对外主张的全部数据均来自真实实测</p>
+<p>（见《测试报告》第八节）。</p>
+<p>单元测试中的凭据样本为<strong>程序生成的伪造值</strong>（内联于测试代码，</p>
+<p>固定可复现），不对应任何真实账号。</p>
 <p>因此本仓库可以安全地公开分发，不存在因示例数据导致的泄露风险。</p>
 <hr>
 <h2>六、第三方数据处理声明</h2>
@@ -1100,7 +1124,7 @@ class MySource(SourceAdapter):
 </ol>
 <p><a href="引用与开源组件说明.md"><code>引用与开源组件说明.md</code></a> 中逐一标注；</p>
 <ol>
-<li>全部演示数据为<strong>程序生成的伪造值</strong>，不对应任何真实账号。</li>
+<li>演示数据来自实时真实公开渠道扫描，结果仅以掩码与指纹呈现，不存储、不传播任何明文凭据；单元测试夹具中的凭据为程序生成的伪造值，不对应任何真实账号。</li>
 </ol>
 <h1 id="sec10">10. 参赛作品声明</h1>
 <h1>参赛作品声明</h1>
@@ -1128,9 +1152,10 @@ class MySource(SourceAdapter):
 </ol>
 <p><strong>官方公开的凭据格式说明</strong>自行编写，未复制任何第三方项目的规则文件。</p>
 <ol>
-<li>本作品中的演示语料（<code>demo/samples/</code>）所含凭据全部为<strong>程序生成的伪造值</strong></li>
+<li>本作品的演示数据来自<strong>实时真实公开渠道扫描</strong>（GitHub 公开 Gist，</li>
 </ol>
-<p>（固定随机种子，可复现），不对应任何真实账号，不存在真实密钥泄露风险。</p>
+<p>公开接口、只读公开内容）。报告中所有凭据仅以<strong>掩码与 HMAC 指纹</strong>呈现，</p>
+<p>不存储、不传播任何明文凭据，不存在真实密钥泄露风险。</p>
 <ol>
 <li>本作品未公开发布、未获得商业价值、不存在知识产权纠纷；</li>
 </ol>

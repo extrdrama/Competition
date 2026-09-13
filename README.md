@@ -26,8 +26,11 @@
 # 1. 安装依赖
 pip install -r requirements.txt
 
-# 2. 离线演示（不需要任何令牌、不需要联网，30 秒看到完整效果）
-python -m credwatch demo
+# 2. 真实数据演示（无需任何令牌，实时扫描 GitHub 公开 Gist）
+#    报告中的每一条发现都来自真实公开渠道，凭据仅以掩码呈现
+python -m credwatch demo            # 默认 120 个 Gist，约 2 分钟
+python -m credwatch demo --gists 600 --rate-limit 180   # 大规模实测
+# 无网络环境可用 python -m credwatch demo --offline 做管线自检
 
 # 3. 查看渠道与规则库
 python -m credwatch sources --health
@@ -120,11 +123,13 @@ credwatch/
 └── cli.py               命令行入口
 
 config/rules/            177 条检测规则（6 个 YAML 文件）
-demo/samples/            离线演示语料（全部为伪造凭据）
-scripts/                 样本生成、文档生成、规则维护脚本
+scripts/                 实测、文档生成、规则维护脚本
 docs/                    交付文档
-tests/                   26 个单元测试
+tests/                   60 个单元测试
 ```
+
+> 本项目不附带任何"演示凭据"文件：演示数据来自实时真实扫描
+> （GitHub 公开 Gist），报告中凭据仅以掩码与 HMAC 指纹呈现。
 
 ## 测试
 

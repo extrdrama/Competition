@@ -170,20 +170,51 @@ def cmd_scan_local(args: argparse.Namespace) -> int:
 
 
 def cmd_demo(args: argparse.Namespace) -> int:
-    """离线演示：三个渠道并行，验证跨渠道关联能力。
+    """真实数据演示：实时扫描 GitHub 公开 Gist 并生成完整报告。
 
-    样本目录里的凭据全部是伪造值；其中同一个令牌同时出现在
-    代码样本与移动端产物中，用于演示"同一凭据跨渠道扩散"的关联效果。
+    默认数据源为**真实公开渠道**（公开接口、无需令牌、只读公开内容）：
+    报告中的每一条发现都来自真实泄露，凭据仅以掩码与指纹呈现，不留存明文。
+
+    `--offline` 仅供无网络环境做检测管线自检（本地若有历史样本则使用之）；
+    离线自检的数字不作为任何对外主张的依据——所有对外数据均来自真实实测。
     """
     settings = Settings.load()
     engine = ScanEngine(settings)
+
+    if args.offline:
+        return _demo_offline(engine, args)
+
+    engine.sources_config = {
+        "sources": {
+            "github": {
+                "enabled": True,
+                "mode": "search",
+                "include_gist": True,
+                "max_items": args.gists,
+                "rate_limit_per_minute": args.rate_limit,
+            }
+        }
+    }
+    _print(f"\n[bold]真实数据演示[/bold]：实时扫描 GitHub 公开 Gist（{args.gists} 个）")
+    _print("数据来源：真实公开渠道；结果仅含掩码与指纹，不含明文凭据。")
+    result = engine.run(["github"], full_rescan=True)
+    _summarize(result)
+    paths = _emit_reports(engine, result, args.out)
+    _print("\n报告已生成（全部数据来自本次真实扫描）：")
+    for name, path in paths.items():
+        _print(f"  - {name}: {path}")
+    return 0
+
+
+def _demo_offline(engine: ScanEngine, args: argparse.Namespace) -> int:
+    """无网络环境的管线自检：仅验证"扫描→检测→报告"链路可用。"""
     demo_dir = PROJECT_ROOT / "demo" / "samples"
-    artifacts_dir = demo_dir / "artifacts"
     if not demo_dir.exists():
-        _print(f"[red]演示样本目录不存在：{demo_dir}[/red]")
-        _print("请先执行：python scripts/make_demo_samples.py")
+        _print("[red]离线自检需要本地样本目录（仓库已不再附带伪数据）。[/red]")
+        _print("正式演示请使用默认的真实数据模式：python -m credwatch demo")
         return 1
 
+    artifacts_dir = demo_dir / "artifacts"
     source_config: dict[str, dict] = {
         "local_dir": {
             "enabled": True,
@@ -203,7 +234,7 @@ def cmd_demo(args: argparse.Namespace) -> int:
         enabled.append("mini_program")
 
     engine.sources_config = {"sources": source_config}
-    _print(f"\n[bold]离线演示[/bold]：样本目录 {demo_dir}")
+    _print("\n[bold]离线自检[/bold]：仅验证检测管线可用，结果不作为对外主张依据")
     _print(f"启用渠道：{', '.join(enabled)}")
     result = engine.run(enabled, full_rescan=True)
     _summarize(result)
@@ -758,8 +789,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_local.add_argument("--workers", type=int, default=1, help="渠道并发数")
     p_local.set_defaults(func=cmd_scan_local)
 
-    p_demo = sub.add_parser("demo", help="离线演示：扫描内置样本并生成报告")
+    p_demo = sub.add_parser("demo", help="真实数据演示：实时扫描 GitHub 公开 Gist 并生成报告")
     p_demo.add_argument("--out", default=None)
+    p_demo.add_argument("--gists", type=int, default=120, help="扫描的公开 Gist 数（默认 120）")
+    p_demo.add_argument("--rate-limit", type=int, default=120, help="每分钟请求上限（默认 120）")
+    p_demo.add_argument(
+        "--offline", action="store_true",
+        help="无网络环境的管线自检（本地样本，结果不作为对外主张依据）",
+    )
     p_demo.set_defaults(func=cmd_demo)
 
     p_report = sub.add_parser("report", help="用数据库现有数据重新生成报告")

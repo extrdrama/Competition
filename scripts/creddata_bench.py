@@ -151,6 +151,30 @@ def records_from_detect_secrets(findings_path: Path) -> list[dict]:
     return _records_from_external(items, "detect-secrets")
 
 
+def records_from_credsweeper(findings_path: Path) -> list[dict]:
+    """CredSweeper 1.18+ JSON 报告 → 统一记录。
+
+    实际结构：顶层 [rule, severity, confidence, ml_probability, line_data_list]，
+    line_data_list 每项含 path / line_num（1 基单行）/ value 等。
+    """
+    data = json.loads(findings_path.read_text(encoding="utf-8"))
+    records: list[dict] = []
+    for item in data if isinstance(data, list) else data.get("results", []):
+        rule = item.get("rule", "credsweeper")
+        mp = item.get("ml_probability")
+        score = float(mp) if isinstance(mp, (int, float)) else 1.0
+        for ld in item.get("line_data_list") or []:
+            rel = normalize_path(ld.get("path", ""))
+            ln = int(ld.get("line_num") or 0)
+            if not rel or ln <= 0:
+                continue
+            records.append({
+                "file": rel, "line": ln, "severity": "high",
+                "confidence": round(score, 4), "rule_id": rule,
+            })
+    return records
+
+
 # --------------------------------------------------------------------------- #
 # 统一评分
 # --------------------------------------------------------------------------- #
@@ -271,7 +295,7 @@ def print_report(tool: str, result: dict) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="CredData 子集多工具统一口径评测")
-    ap.add_argument("--tool", choices=["credwatch", "gitleaks", "detect_secrets"])
+    ap.add_argument("--tool", choices=["credwatch", "gitleaks", "detect_secrets", "credsweeper"])
     ap.add_argument("--data-root", default=".bench/CredData")
     ap.add_argument("--findings", default=None, help="外部工具 JSON 报告")
     ap.add_argument("--from-raw", default=None, help="从已落盘的原始命中复评")
@@ -297,6 +321,9 @@ def main() -> int:
     elif args.tool == "gitleaks":
         records = records_from_gitleaks(Path(args.findings))
         tool = "gitleaks"
+    elif args.tool == "credsweeper":
+        records = records_from_credsweeper(Path(args.findings))
+        tool = "credsweeper"
     else:
         records = records_from_detect_secrets(Path(args.findings))
         tool = "detect-secrets"

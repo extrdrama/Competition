@@ -26,6 +26,15 @@ SECRET_NAME_RE = re.compile(
     r"SALT|CIPHER|PRIVATE|CERT|DSN|CONN(?:ECTION)?)(?:$|_)"
 )
 
+# 常见环境/配置取值——形如 SECRET_KEY=development 不应算作凭据泄露
+_COMMON_ENV_WORDS = frozenset({
+    "development", "production", "staging", "testing", "test", "local",
+    "localhost", "debug", "default", "enabled", "disabled", "true", "false",
+    "none", "null", "undefined", "utf8", "ascii", "json", "yaml", "text",
+    "application", "server", "client", "public", "readonly", "readwrite",
+    "info", "warn", "warning", "error", "trace", "silent",
+})
+
 DOTENV_RE = re.compile(r"^(?P<indent>\s*)(?:export\s+)?(?P<key>[A-Za-z_][A-Za-z0-9_.]*)\s*=\s*(?P<raw>.*)$")
 INI_SECTION_RE = re.compile(r"^\s*\[(?P<name>[^\]]+)\]\s*$")
 INI_KV_RE = re.compile(r"^\s*(?P<key>[A-Za-z_][A-Za-z0-9_.\-]*)\s*[=:]\s*(?P<raw>.+?)\s*$")
@@ -288,6 +297,23 @@ class StructuredParser:
         if len(set(value)) <= 2:
             return False
         if value.startswith(("/", "./", "../")):
+            return False
+        # 真实凭据不含空格；含空格的取值几乎都是 "Secret access key" 这类
+        # 文档说明文字（CredData 探针中的主要误报形态之一）。
+        if " " in value or "\t" in value:
+            return False
+        # URL、模板表达式与 shell 命令替换不是凭据
+        if "://" in value or "`" in value or "$(" in value or "${" in value:
+            return False
+        # 纯数字取值（枚举常量、端口、时间戳）
+        if value.isdigit():
+            return False
+        # 真实凭据通常含数字或符号；纯字母单词（development / production /
+        # localhost 等环境名）不是凭据。经验证据：CredData 探针中该规则
+        # 误报远多于真值，主因即 dotenv 里大量纯字母配置值。
+        if len(value) < 12 and value.isalpha():
+            return False
+        if value.isalpha() and value.lower() in _COMMON_ENV_WORDS:
             return False
         if not SECRET_NAME_RE.search(key):
             return False

@@ -46,3 +46,4 @@ make_demo_samples.py
 
 tests/_fixture_*
 .slidep/
+.bench/

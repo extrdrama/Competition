@@ -38,8 +38,9 @@ rules:
     kind: 系统口令
     severity: high
     pattern: '(?i)\b(?:root|administrator|admin|sa|postgres|oracle|ubuntu|centos)\s*[:/]\s*([^\s:''"]{6,})'
+    require_keywords: [password, passwd, pwd, 密码, 口令]
     keywords: [root, admin, password]
-    description: 形如 root:password 或 root/password 的系统账号凭据。
+    description: 形如 root:password 或 root/password 的系统账号凭据（需口令上下文共现，避免命中 URL 路径与配置项）。
 
   - id: ssh-command-password
     name: SSH 命令行口令

@@ -208,6 +208,11 @@ class DetectionPipeline:
                         url=doc.url,
                         path_hint=doc.path_hint or doc.url,
                         line_no=cand.line_no,
+                        line_end=(
+                            doc.text.count("\n", 0, max(0, cand.span[1] - 1)) + 1
+                            if cand.span and cand.span[1] > cand.span[0]
+                            else cand.line_no
+                        ),
                         snippet=cand.snippet,
                         published_at=doc.published_at,
                         discovered_at=doc.discovered_at,

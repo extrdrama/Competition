@@ -124,6 +124,7 @@ class Evidence:
     url: str
     path_hint: str = ""
     line_no: int | None = None
+    line_end: int | None = None
     snippet: str = ""
     published_at: datetime | None = None
     discovered_at: datetime | None = None

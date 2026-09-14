@@ -227,7 +227,12 @@ def extract_features(
 
     # ---- 负向证据 ----
     values["doc_path"] = 1.0 if path_hint and DOC_PATH_RE.search(path_hint) else 0.0
-    values["hash_context"] = 1.0 if HASH_CONTEXT_RE.search(window) else 0.0
+    # hash_context 只看**命中所在行**：多行凭据（PEM 块）的窗口会覆盖整段
+    # base64，随机字符极易偶然拼出 md5/sha 等词，造成系统性误判。
+    _line_start = text.rfind("\n", 0, start) + 1
+    _line_end = text.find("\n", end)
+    _same_line = text[_line_start : _line_end if _line_end != -1 else len(text)].lower()
+    values["hash_context"] = 1.0 if HASH_CONTEXT_RE.search(_same_line) else 0.0
     values["benign_hint"] = 1.0 if BENIGN_NEARBY_RE.search(window) else 0.0
     values["env_reference"] = 1.0 if ("${" in window or "environ" in window or "process.env" in window) else 0.0
     values["low_information"] = 1.0 if len(set(secret)) <= 3 or len(secret) < 8 else 0.0

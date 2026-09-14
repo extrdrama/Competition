@@ -98,7 +98,10 @@ def rule_specificity(rule_id: str, require_keywords: list[str] | None = None) ->
 
 def _iter_tokens(sequence):
     """递归展开 sre_parse 的子模式/分支/重复，产出 (op, av) 序列。"""
-    from re import _parser as sre_parser
+    try:
+        from re import _parser as sre_parser  # Python 3.11+
+    except ImportError:  # Python 3.10 及更早
+        from re import sre_parse as sre_parser
 
     for op, av in sequence:
         yield op, av
@@ -124,7 +127,10 @@ def longest_literal_run(pattern: str) -> int:
     只统计从模式开头起的连续字面量（遇到字符类/量词/断言即停），
     分组透传、分支取第一个选项——这正是"平台专有前缀"的语义。
     """
-    from re import _parser as sre_parser
+    try:
+        from re import _parser as sre_parser  # Python 3.11+
+    except ImportError:  # Python 3.10 及更早
+        from re import sre_parse as sre_parser
 
     def head(seq) -> int:
         run = 0

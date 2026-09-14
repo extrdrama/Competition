@@ -30,9 +30,11 @@ SENSITIVE_PATH_RE = re.compile(
     r"\.git-credentials|kubeconfig|docker-compose|secrets?\.(?:ya?ml|json|env|txt))"
 )
 
-# 属于"文档/示例/测试"的路径，降低置信度
+# 属于"文档/示例"的路径，降低置信度。
+# 注意：**不包含 test/ 目录**——官方基准（CredData）的标注真值中 67.3% 位于
+# test/ 路径，测试目录是硬编码凭据的高发区而非示例值，故不构成否定证据。
 DOC_PATH_RE = re.compile(
-    r"(?i)(?:readme|/docs?/|^docs?/|/tests?/|fixture|sample|example|mock|changelog|"
+    r"(?i)(?:readme|/docs?/|^docs?/|fixture|sample|example|mock|changelog|"
     r"\.md$|tutorial)"
 )
 

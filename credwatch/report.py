@@ -329,6 +329,96 @@ def write_csv(result: Any, path: Path) -> None:
                 )
 
 
+SARIF_LEVEL = {"critical": "error", "high": "error", "medium": "warning", "low": "note"}
+
+
+def render_sarif(result: Any, rule_engine: RuleEngine) -> str:
+    """渲染 SARIF 2.1.0 结果，供 GitHub Code Scanning / CI 平台直接消费。
+
+    与 gitleaks / trufflehog 同级的集成能力；凭据只以掩码呈现，
+    不把任何明文凭据写入 SARIF（该格式常被平台展示给多人）。
+    """
+    rules: dict[str, dict] = {}
+    results: list[dict] = []
+    for cluster in result.clusters:
+        rule_id = cluster.rule_id or cluster.rule_name
+        if rule_id not in rules:
+            rules[rule_id] = {
+                "id": rule_id,
+                "name": cluster.rule_name,
+                "shortDescription": {"text": cluster.rule_name},
+                "fullDescription": {"text": f"检测到疑似{cluster.kind or cluster.category}凭据泄露"},
+                "defaultConfiguration": {"level": SARIF_LEVEL.get(cluster.severity, "warning")},
+                "properties": {
+                    "credentialKind": cluster.kind or cluster.category,
+                    "severity": cluster.severity,
+                    "security-severity": {"critical": "9.5", "high": "8.0", "medium": "5.0", "low": "2.0"}.get(
+                        cluster.severity, "5.0"
+                    ),
+                },
+            }
+        attr = result.attributions.get(cluster.fingerprint)
+        advice = "建议：吊销/轮换该凭据，排查暴露原因并从历史中清除。"
+        for exposure in cluster.exposures:
+            uri = (exposure.get("url") or "unknown").replace("file://", "")
+            region: dict = {}
+            if exposure.get("line"):
+                try:
+                    region["startLine"] = int(exposure["line"])
+                except (TypeError, ValueError):
+                    pass
+            location = {"physicalLocation": {"artifactLocation": {"uri": uri}}}
+            if region:
+                location["physicalLocation"]["region"] = region
+            results.append(
+                {
+                    "ruleId": rule_id,
+                    "level": SARIF_LEVEL.get(cluster.severity, "warning"),
+                    "message": {
+                        "text": (
+                            f"检测到疑似凭据泄露（{cluster.rule_name}，掩码 {cluster.masked}，"
+                            f"暴露位置 {len(cluster.exposures)} 处）。{advice}"
+                            + (f" 归属主体：{attr.display}。" if attr else "")
+                        )
+                    },
+                    "locations": [location],
+                    "partialFingerprints": {"credwatchFingerprint/v1": cluster.fingerprint},
+                    "properties": {
+                        "maskedValue": cluster.masked,
+                        "credentialKind": cluster.kind or cluster.category,
+                        "severity": cluster.severity,
+                        "probability": round(cluster.confidence, 4),
+                        "validated": cluster.validated,
+                        "firstPublishedAt": exposure.get("published_at") or "",
+                        "discoveredAt": exposure.get("discovered_at") or "",
+                        "owner": attr.display if attr else "",
+                    },
+                }
+            )
+    sarif = {
+        "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+        "version": "2.1.0",
+        "runs": [
+            {
+                "tool": {
+                    "driver": {
+                        "name": "CredWatch",
+                        "informationUri": "https://github.com/extrdrama/Competition",
+                        "semanticVersion": "1.0.0",
+                        "rules": sorted(rules.values(), key=lambda r: r["id"]),
+                    }
+                },
+                "results": results,
+            }
+        ],
+    }
+    return json.dumps(sarif, ensure_ascii=False, indent=2)
+
+
+def write_sarif(result: Any, rule_engine: RuleEngine, path: Path) -> None:
+    path.write_text(render_sarif(result, rule_engine), encoding="utf-8")
+
+
 def write_reports(result: Any, rule_engine: RuleEngine, out_dir: Path) -> dict[str, Path]:
     """写出全部报告文件，返回路径映射。"""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -337,10 +427,12 @@ def write_reports(result: Any, rule_engine: RuleEngine, out_dir: Path) -> dict[s
         "markdown": out_dir / f"credwatch_report_{stamp}.md",
         "json": out_dir / f"credwatch_result_{stamp}.json",
         "csv": out_dir / f"credwatch_exposures_{stamp}.csv",
+        "sarif": out_dir / f"credwatch_result_{stamp}.sarif",
     }
     paths["markdown"].write_text(render_markdown(result, rule_engine), encoding="utf-8")
     paths["json"].write_text(render_json(result), encoding="utf-8")
     write_csv(result, paths["csv"])
+    write_sarif(result, rule_engine, paths["sarif"])
     # HTML 版：自包含、带图表，浏览器打开即可打印为 PDF（提交用）
     write_html(result, rule_engine, out_dir / "latest_report.html")
     paths["html"] = out_dir / "latest_report.html"

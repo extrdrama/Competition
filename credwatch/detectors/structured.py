@@ -35,7 +35,8 @@ _COMMON_ENV_WORDS = frozenset({
     "info", "warn", "warning", "error", "trace", "silent",
 })
 
-DOTENV_RE = re.compile(r"^(?P<indent>\s*)(?:export\s+)?(?P<key>[A-Za-z_][A-Za-z0-9_.]*)\s*=\s*(?P<raw>.*)$")
+# dotenv 键名不允许点号：`self._key = ...` 这类 Python 代码行不是 dotenv 项
+DOTENV_RE = re.compile(r"^(?P<indent>\s*)(?:export\s+)?(?P<key>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?P<raw>.*)$")
 INI_SECTION_RE = re.compile(r"^\s*\[(?P<name>[^\]]+)\]\s*$")
 INI_KV_RE = re.compile(r"^\s*(?P<key>[A-Za-z_][A-Za-z0-9_.\-]*)\s*[=:]\s*(?P<raw>.+?)\s*$")
 PEM_BLOCK_RE = re.compile(
@@ -285,6 +286,8 @@ class StructuredParser:
         if not value.startswith(("'", '"')):
             value = re.split(r"\s+#", value, maxsplit=1)[0].strip()
         value = value.strip().strip("'\"")
+        # 去尾随逗号/分号（Python/Go/JSON 风格赋值的连带字符，非值的一部分）
+        value = value.rstrip(",;").strip()
         return value
 
     def _is_secret_pair(self, key: str, value: str) -> bool:
@@ -307,6 +310,19 @@ class StructuredParser:
             return False
         # 纯数字取值（枚举常量、端口、时间戳）
         if value.isdigit():
+            return False
+        # 代码标识符链（a.b.c / self._key 的取值侧）与大写常量不是凭据：
+        # Python/Go 源码里 `token = login_or_token`、`key = self.user.create_key(...)`
+        # 是 CredData 探针中该检测器的主要误报形态。
+        if "(" in value or ")" in value or "{" in value or "}" in value:
+            return False
+        if "." in value and re.fullmatch(r"[\w.]+", value):
+            return False
+        if re.fullmatch(r"0[xX][0-9a-fA-F]+", value):
+            return False  # 十六进制字面量（C 常量）
+        if value.endswith(":"):
+            return False  # "fscrypt:" 这类 scheme 前缀文本
+        if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value) and not any(c.isdigit() for c in value):
             return False
         # 真实凭据通常含数字或符号；纯字母单词（development / production /
         # localhost 等环境名）不是凭据。经验证据：CredData 探针中该规则

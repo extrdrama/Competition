@@ -209,3 +209,11 @@ rules:
     secret_group: 2
     keywords: [http, https]
     description: URL 中直接内嵌的 user:password@host 形式凭据。
+
+  - id: generic-userinfo-uri
+    name: 通用带凭据 URI（scheme://user:pass@）
+    kind: 连接串
+    severity: critical
+    pattern: '(?i)\b([a-z][a-z0-9+.-]{2,20})://([^\s:/@''"]{1,64}):([^\s:/@''"]{3,64})@[^\s/''"]'
+    secret_group: 3
+    description: 任意 scheme 的 user:pass@host 形式连接串（nats/amqp/ftp/mqtt 等专用规则之外的长尾）。

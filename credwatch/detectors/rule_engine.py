@@ -182,6 +182,8 @@ PLACEHOLDER_MATCH_RE = re.compile(
     r"|example\.(?:com|org|net)"
     r"|\bplaceholder\b|\breplace[_-]?me\b|\bchangeme\b"
     r"|\bfoo[:.]bar\b"
+    r"|correct[_-]?horse"                                    # XKCD 著名示例口令
+    r"|\bfake\w*\b|\bdummy\w*\b|\bmock[_-]"                  # 自我声明的假数据键名
     r")"
 )
 
@@ -257,6 +259,15 @@ def is_placeholder(value: str) -> bool:
         return True
     # 单一字符重复（aaaa..., 1111...）
     if len(set(v)) <= 2:
+        return True
+    # 全大写下划线常量（DEBUG_FRAME / SECRET_VEGADNS_SECRET）是代码常量名，
+    # 不是凭据值——真实密钥几乎不会是这种形态。
+    if re.fullmatch(r"[A-Z][A-Z0-9_]*_[A-Z0-9_]*", v):
+        return True
+    # 3 个及以上单词的取值几乎都是文档描述（"Password needs to be generated..."）
+    # 或著名示例口令（"correct horse battery staple"），而非真实凭据。
+    # 多行值（PEM 块等）不适用此守卫。
+    if "\n" not in v and len(v.split()) >= 3:
         return True
     for pat in PLACEHOLDER_PATTERNS:
         if pat.search(v):

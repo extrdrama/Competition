@@ -10,7 +10,7 @@ rules:
     name: 环境变量口令赋值
     kind: 通用口令
     severity: high
-    pattern: '(?i)^\s*(?!#)(?:export\s+)?([A-Z][A-Z0-9_]*(?:PASSWORD|PASSWD|PASS|PWD|SECRET|TOKEN|CREDENTIAL)[A-Z0-9_]*)\s*=\s*[''"]?([^\s''"]{6,})[''"]?\s*$'
+    pattern: '(?i)^\s*(?!#)(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*(?:PASSWORD|PASSWD|PASS|PWD|SECRET|TOKEN|CREDENTIAL)[A-Za-z0-9_]*)\s*=\s*[''"]?((?=[^\s''",\\.[:\]]*(?:\d)|[^\s''",\\.[:\]]{20,})[^\s''",\\.[:\]]{6,})[''"]?\s*[,\\]?\s*$'
     secret_group: 2
     multiline: true
     keywords: [password, secret, token]
@@ -20,7 +20,7 @@ rules:
     name: YAML 口令字段
     kind: 通用口令
     severity: high
-    pattern: '(?im)^\s*(?:password|passwd|pwd|secret|token|api[_-]?key|access[_-]?key|private[_-]?key)\s*:\s*[''"]?([^\s''"#]{6,})[''"]?\s*(?:#.*)?$'
+    pattern: '(?im)^\s*["'']?[A-Za-z_][\w-]*(?:password|passwd|pwd|secret|token|api[_-]?key|access[_-]?key|private[_-]?key)[\w-]*["'']?\s*[:=]\s*["'']([^''"\n]{6,})["'']\s*,?\s*(?:\\\\)?\s*(?:#.*)?$'
     multiline: true
     keywords: [password, secret, token]
     description: YAML 配置文件里的口令字段（k8s Secret、docker-compose、Spring 配置等）。
@@ -29,7 +29,7 @@ rules:
     name: JSON 口令字段
     kind: 通用口令
     severity: high
-    pattern: '(?i)"(?:password|passwd|pwd|secret|token|apiKey|api_key|accessKey|privateKey)"\s*:\s*"([^"]{6,})"'
+    pattern: '(?i)"(?:[\w-]*_)?(?:password|passwd|pwd|secret|token|api[_-]?key|access[_-]?key|private[_-]?key)"\s*:\s*"([^"]{6,})"'
     keywords: [password, secret, apiKey]
     description: JSON 配置文件里的口令字段。
 
@@ -37,7 +37,7 @@ rules:
     name: 操作系统账号口令
     kind: 系统口令
     severity: high
-    pattern: '(?i)\b(?:root|administrator|admin|sa|postgres|oracle|ubuntu|centos)\s*[:/]\s*([^\s:''"]{6,})'
+    pattern: '(?i)\b(?:root|administrator|admin|sa|postgres|oracle|ubuntu|centos)\s*[:=]\s*([^\s:''"=$/.()]{6,})'
     require_keywords: [password, passwd, pwd, 密码, 口令]
     keywords: [root, admin, password]
     description: 形如 root:password 或 root/password 的系统账号凭据（需口令上下文共现，避免命中 URL 路径与配置项）。
@@ -168,3 +168,11 @@ rules:
     pattern: '(?i)\b(?:admin|root|test|user)\s*[:/]\s*(?:admin|root|test|123456|password|12345678|qwerty)\b'
     keywords: [admin, root, password]
     description: 典型弱口令组合，提示目标系统存在可直接登录风险。
+
+  - id: access-token-uuid
+    name: 访问令牌（UUID 形态）
+    kind: 认证令牌
+    severity: high
+    pattern: '(?i)["'']?access[_-]?token["'']?\s*[:=]\s*["'']?([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})(?![0-9A-Fa-f-])'
+    keywords: [access_token, token]
+    description: access_token 键名下的 UUID 形态访问令牌（OAuth/网关签发常见格式）。

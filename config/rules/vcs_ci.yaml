@@ -78,7 +78,7 @@ rules:
     name: Gitee 私人令牌
     kind: 代码托管令牌
     severity: high
-    pattern: '(?<![A-Za-z0-9])([a-f0-9]{32})(?![A-Za-z0-9])'
+    pattern: '(?i)(?:gitee[_-]?(?:token|pat|secret)|private[_-]?token|access[_-]?token)["'']?\s*[:=]\s*["'']?([a-f0-9]{32})(?![a-f0-9])'
     require_keywords: [gitee, access_token, private_token]
     keywords: [gitee]
     description: Gitee 私人令牌（32 位十六进制，需上下文关键词确认）。
@@ -367,3 +367,11 @@ rules:
     pattern: '(?i)snyk.{0,25}?token\s*[=:]\s*[''"]?([a-f0-9-]{36})[''"]?'
     keywords: [snyk]
     description: Snyk API Token。
+
+  - id: ntlm-auth-header
+    name: NTLM 认证头
+    kind: 认证凭据
+    severity: medium
+    pattern: '(?i)\b(?:Authorization|WWW-Authenticate)\s*:\s*NTLM\s+([A-Za-z0-9+/=]{40,})'
+    keywords: [ntlm]
+    description: NTLM 认证头携带的 Base64 凭据消息（可离线破解或重放）。

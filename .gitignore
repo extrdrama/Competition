@@ -47,3 +47,7 @@ make_demo_samples.py
 tests/_fixture_*
 .slidep/
 .bench/
+
+# 本地打包/部署产物
+creddata_deploy.tar.gz
+*.tar.gz
